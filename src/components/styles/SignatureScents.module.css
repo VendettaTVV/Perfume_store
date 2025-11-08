@@ -1,0 +1,20 @@
+/* src/components/styles/SignatureScents.module.css */
+.signatureScents {
+  padding: 60px 40px;
+  background-color: #D4CFCB;
+  text-align: center;
+}
+
+.title {
+  font-size: 2em;
+  margin-bottom: 40px;
+  color: #333;
+  letter-spacing: 1px;
+}
+
+.productList {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}

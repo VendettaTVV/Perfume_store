@@ -1,0 +1,61 @@
+/* src/components/styles/ProductCard.module.css */
+.card {
+  width: 250px;
+  padding: 20px;
+  text-align: center;
+  background-color: #D4CFCB;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+  filter: brightness(0.9);
+}
+
+.name {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+.description {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.price {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.addToCartButton {
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #333;
+  padding: 8px 15px;
+  font-size: 0.8em;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-end;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.addToCartButton:hover {
+  background-color: #333;
+  color: #fff;
+}
