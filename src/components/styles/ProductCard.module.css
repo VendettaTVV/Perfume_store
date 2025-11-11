@@ -1,4 +1,11 @@
 /* src/components/styles/ProductCard.module.css */
+
+.cardLink {
+  text-decoration: none; /* Убираем подчеркивание у ссылки */
+  color: inherit;
+  display: block;
+}
+
 .card {
   width: 250px;
   padding: 20px;
@@ -8,54 +15,33 @@
   border-radius: 5px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  position: relative;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .image {
   max-width: 100%;
-  height: auto;
+  height: 200px; /* Задаем фиксированную высоту для единообразия */
+  object-fit: cover;
   margin-bottom: 15px;
-  filter: brightness(0.9);
 }
 
 .name {
   font-size: 1.2em;
   margin-bottom: 5px;
   color: #333;
-  letter-spacing: 0.5px;
-}
-
-.description {
-  font-size: 0.9em;
-  color: #666;
-  margin-bottom: 10px;
 }
 
 .price {
   font-size: 1.1em;
   font-weight: bold;
   color: #333;
-  margin-bottom: 15px;
+  margin-top: auto; /* Прижимаем цену к низу, если описание разной высоты */
+  padding-top: 10px;
 }
 
-.addToCartButton {
-  background-color: transparent;
-  color: #333;
-  border: 1px solid #333;
-  padding: 8px 15px;
-  font-size: 0.8em;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  align-self: flex-end;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-}
-
-.addToCartButton:hover {
-  background-color: #333;
-  color: #fff;
-}
+/* ❗ УДАЛИТЕ .variantSelector, .variantButton, .addToCartButton из этого файла */

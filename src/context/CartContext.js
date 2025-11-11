@@ -1,45 +1,67 @@
 // src/context/CartContext.js
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
-export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+// --- 1. Функция для ЗАГРУЗКИ корзины из localStorage ---
+// Мы выносим ее за пределы компонента
+const getInitialCart = () => {
+  try {
+    const savedCart = localStorage.getItem('perfumeCart');
+    // Если корзина есть, парсим ее. Если нет - возвращаем пустой массив.
+    return savedCart ? JSON.parse(savedCart) : [];
+  } catch (error) {
+    console.error("Не удалось загрузить корзину из localStorage", error);
+    return [];
+  }
+};
 
-  // Функция добавления товара
+export const CartProvider = ({ children }) => {
+  // --- 2. Инициализируем стейт С ПОМОЩЬЮ ФУНКЦИИ ---
+  // Этот код выполнится только один раз при запуске
+  const [cartItems, setCartItems] = useState(getInitialCart);
+
+  // --- 3. useEffect для СОХРАНЕНИЯ корзины ---
+  // Этот код будет срабатывать КАЖДЫЙ РАЗ, когда cartItems меняется
+  useEffect(() => {
+    try {
+      localStorage.setItem('perfumeCart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Не удалось сохранить корзину в localStorage", error);
+    }
+  }, [cartItems]); // Зависимость - cartItems
+
+  // --- (Остальная логика не изменилась) ---
+
   const addToCart = (product) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+      const existingItem = prevItems.find(item => item.cartItemId === product.cartItemId);
+      
       if (existingItem) {
-        // Если товар уже в корзине, увеличиваем количество
         return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.cartItemId === product.cartItemId ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
-        // Иначе добавляем новый товар
         return [...prevItems, { ...product, quantity: 1 }];
       }
     });
   };
 
-  // Функция удаления товара
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId) => {
+    setCartItems(prevItems => prevItems.filter(item => item.cartItemId !== cartItemId));
   };
 
-  // Общая стоимость
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // Общее количество товаров
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <CartContext.Provider value={{ 
       cartItems, 
       addToCart, 
-      removeFromCart, 
+      removeFromCart,
       total,
       totalQuantity
     }}>

@@ -24,8 +24,8 @@ function RegisterForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      // ⚠️ Имитация запроса на регистрацию (ЗАМЕНИТЬ на реальный API!)
-      const response = await fetch('/api/auth/register', {
+      // ✅ СТАЛО (указываем полный путь к нашему Node.js серверу)
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),

@@ -2,97 +2,152 @@
 import React, { useState } from 'react';
 import styles from './styles/AddProductForm.module.css';
 
-const initialProductState = {
-  name: '',
-  description: '',
-  price: '',
-  notes: '', 
-  imageFile: null,
-  imageUrl: '', 
-};
-
 function AddProductForm() {
-  const [productData, setProductData] = useState(initialProductState);
+  const [name, setName] = useState('');
+  const [baseDescription, setBaseDescription] = useState('');
+  const [variants, setVariants] = useState([
+    { size: '', price: '', image: '' }
+  ]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData(prev => ({ ...prev, [name]: value }));
+  // --- УПРАВЛЕНИЕ ВАРИАНТАМИ ---
+
+  const handleVariantChange = (index, event) => {
+    const newVariants = [...variants];
+    newVariants[index][event.target.name] = event.target.value;
+    setVariants(newVariants);
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProductData(prev => ({ ...prev, imageFile: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProductData(prev => ({ ...prev, imageUrl: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleAddVariant = () => {
+    setVariants([...variants, { size: '', price: '', image: '' }]);
   };
+
+  const handleRemoveVariant = (index) => {
+    const newVariants = [...variants];
+    newVariants.splice(index, 1);
+    setVariants(newVariants);
+  };
+
+  // --- ОТПРАВКА ФОРМЫ ---
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
 
-    const formData = new FormData();
-    for (const key in productData) {
-        if (key !== 'imageUrl') {
-            formData.append(key, productData[key]);
-        }
+    // 1. ❗ Получаем токен из localStorage
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setMessage('❌ Вы не авторизованы. Войдите в систему.');
+      setLoading(false);
+      return;
     }
 
+    const productData = {
+      name,
+      baseDescription,
+      variants: variants.map(v => ({
+        ...v,
+        size: Number(v.size),
+        price: Number(v.price),
+      }))
+    };
+    
+    // (Валидация...)
+
     try {
-      // ⚠️ Имитация запроса на добавление товара (ЗАМЕНИТЬ на реальный API!)
-      const response = await fetch('/api/admin/products', {
+      const response = await fetch('http://localhost:5000/api/products', {
         method: 'POST',
-        // В реальном приложении: body: formData, headers: { 'Authorization': `Bearer ${adminToken}` }
+        headers: { 
+          'Content-Type': 'application/json',
+          // 2. ❗ ДОБАВЛЯЕМ ТОКЕН В ЗАГОЛОВОК
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(productData), 
       });
 
-      if (true /* response.ok */) { // Имитация успеха
+      // 3. ❗ Обрабатываем ошибки авторизации
+      if (response.status === 401 || response.status === 403) {
+        setMessage('❌ Ошибка авторизации. Ваш токен недействителен или истек.');
+      } else if (response.ok) {
         setMessage('✅ Товар успешно добавлен!');
-        setProductData(initialProductState);
+        setName('');
+        setBaseDescription('');
+        setVariants([{ size: '', price: '', image: '' }]);
       } else {
-        setMessage('❌ Ошибка добавления: Произошла ошибка на сервере.');
+        const errorData = await response.json();
+        setMessage(`❌ Ошибка от сервера: ${errorData.message}`);
       }
-    } catch (error) {
-      setMessage('❌ Ошибка сети. Проверьте соединение с сервером.');
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Ошибка сети. Бэкенд запущен?');
     } finally {
       setLoading(false);
     }
   };
 
+  // --- JSX (Верстка) ---
   return (
     <div className={styles.container}>
       <h2>➕ Добавить Новый Аромат (Админка)</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         
         <label>Название Аромата:</label>
-        <input type="text" name="name" value={productData.name} onChange={handleChange} required />
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <label>Описание:</label>
-        <textarea name="description" value={productData.description} onChange={handleChange} required />
+        <label>Базовое Описание:</label>
+        <textarea value={baseDescription} onChange={(e) => setBaseDescription(e.target.value)} required />
         
-        <label>Цена ($):</label>
-        <input type="number" name="price" value={productData.price} onChange={handleChange} required min="0.01" step="0.01" />
-
-        <label>Ключевые Ноты (через запятую):</label>
-        <input type="text" name="notes" value={productData.notes} onChange={handleChange} />
-
-        <label>Изображение:</label>
-        <input type="file" name="imageFile" accept="image/*" onChange={handleImageChange} required />
+        <div className={styles.separator}></div>
         
-        {productData.imageUrl && (
-            <div className={styles.imagePreview}>
-                <img src={productData.imageUrl} alt="Предпросмотр" />
+        <h3>Варианты (Объемы)</h3>
+        {variants.map((variant, index) => (
+          <div key={index} className={styles.variantBox}>
+            <h4>Вариант #{index + 1}</h4>
+            <div className={styles.variantInputs}>
+              <input 
+                name="size" 
+                placeholder="Объем (мл)" 
+                value={variant.size} 
+                onChange={(e) => handleVariantChange(index, e)} 
+                type="number" 
+                required 
+              />
+              <input 
+                name="price" 
+                placeholder="Цена ($)" 
+                value={variant.price} 
+                onChange={(e) => handleVariantChange(index, e)} 
+                type="number" 
+                step="0.01" 
+                required 
+              />
+              <input 
+                name="image" 
+                placeholder="Путь к картинке (напр. /images/foto.jpg)" 
+                value={variant.image} 
+                onChange={(e) => handleVariantChange(index, e)} 
+                type="text" 
+                required 
+              />
             </div>
-        )}
+            {variants.length > 1 && (
+              <button type="button" className={styles.removeBtn} onClick={() => handleRemoveVariant(index)}>
+                Удалить этот вариант
+              </button>
+            )}
+          </div>
+        ))}
+        
+        <button type="button" className={styles.addBtn} onClick={handleAddVariant}>
+          + Добавить еще вариант
+        </button>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Загрузка...' : 'Добавить Товар'}
+        <div className={styles.separator}></div>
+
+        <button type="submit" className={styles.submitBtn} disabled={loading}>
+          {loading ? 'Загрузка...' : 'Добавить Товар в Базу'}
         </button>
       </form>
       {message && <p className={styles.message}>{message}</p>}

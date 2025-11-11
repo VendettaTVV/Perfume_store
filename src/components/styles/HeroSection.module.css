@@ -28,7 +28,7 @@
 .heroContent {
   position: relative;
   z-index: 2;
-  max-width: 600px;
+  max-width: 650px;
   padding: 20px;
 }
 
@@ -37,19 +37,22 @@
   margin-bottom: 15px;
   letter-spacing: 2px;
   font-weight: normal;
+  font-style: italic;
+  font-family:'Lora', serif;
 }
 
 .subtitle {
   font-size: 1.2em;
   margin-bottom: 30px;
   line-height: 1.5;
+  font-style: italic;
 }
 
 .ctaButton {
   background-color: transparent;
   color: #ffffff;
   border: 1px solid #ffffff;
-  padding: 15px 30px;
+  padding: 10px 30px;
   font-size: 1em;
   letter-spacing: 1px;
   text-transform: uppercase;

@@ -14,11 +14,13 @@ function Header() {
   return (
     <header className={styles.header}>
       {/* ... Логотип (из предыдущего ответа) ... */}
+      <Link to="/" className={styles.logoLink}>
       <div className={styles.logo}>
-        <span className={styles.logoText}>HTML/CSS and JavaScript React</span>
+       {/*} <span className={styles.logoText}></span> */}
         <span className={styles.brandName}>AROMATICUS</span>
         <span className={styles.tagline}>THE SCENT OF STORIES</span>
       </div>
+      </Link>
       
       <nav className={styles.nav}>
         <ul>

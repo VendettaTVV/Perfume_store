@@ -15,6 +15,11 @@
   align-items: center;
 }
 
+.logoLink {
+  text-decoration: none; /* Убираем подчеркивание */
+  color: inherit; /* Наследуем цвет текста */
+}
+
 .logoText {
   font-size: 10px;
   letter-spacing: 1px;

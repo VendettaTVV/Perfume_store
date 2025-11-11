@@ -1,22 +1,74 @@
 // src/pages/HomePage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HeroSection from '../components/HeroSection';
 import SignatureScents from '../components/SignatureScents';
 
-
-// Заглушка данных для товаров
-const mockProducts = [
-  { id: 1, name: 'NOCTURE', description: 'Ceramic for-flam.', price: 16.50, image: '/images/images.jpeg', bgColor: '#D4CFCB' },
-  { id: 2, name: 'LUMIÈRE ÉTERNELLE', description: 'Eastment. Fusion', price: 22.00, image: '/images/shopping (1).webp', bgColor: '#D4CFCB' },
-  { id: 3, name: 'LUMIÈRE ÉTERNELLE', description: 'Doritompoza Forte', price: 33.00, image: '/images/shopping.webp', bgColor: '#D4CFCB' },
-  { id: 4, name: 'SUNHINE SCENTS', description: 'Unberromom Tiermad', price: 55.00, image: '/images/shopping (2).webp', bgColor: '#D4CFCB' },
-];
-
 function HomePage() {
+  const [products, setProducts] = useState([]); // По-прежнему массив по умолчанию
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Стейт для хранения ошибки
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null); // Сбрасываем предыдущие ошибки
+
+        const response = await fetch('http://localhost:5000/api/products');
+
+        // --- 1. ПРОВЕРКА ОТВЕТА ---
+        if (!response.ok) {
+          // Если ответ 404, 500 и т.д. - выбрасываем ошибку
+          throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // --- 2. ПРОВЕРКА, ЧТО ДАННЫЕ - МАССИВ ---
+        if (Array.isArray(data)) {
+          setProducts(data); // Все в порядке, сохраняем массив
+        } else {
+          // Если сервер вернул не массив (например, объект ошибки)
+          console.error("Получены не-массивные данные:", data);
+          setProducts([]); // Устанавливаем пустой массив, чтобы .map() не сломался
+          setError("Формат полученных данных некорректен.");
+        }
+
+      } catch (err) {
+        // Ловим ошибки (Failed to fetch, или те, что мы "бросили" выше)
+        console.error("Ошибка при загрузке товаров:", err);
+        setError(`Не удалось загрузить товары. ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []); // [] - пустой массив означает "запустить 1 раз при загрузке"
+
+  // --- 3. РЕНДЕРИНГ НА ОСНОВЕ СОСТОЯНИЯ ---
+
+  // Показываем индикатор загрузки
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '100px' }}>Загрузка ароматов...</div>;
+  }
+
+  // Показываем сообщение об ошибке, если она есть
+  if (error) {
+    return <div style={{ textAlign: 'center', padding: '100px', color: 'red' }}>{error}</div>;
+  }
+
+  // Показываем товары, если все в порядке
   return (
     <>
       <HeroSection />
-      <SignatureScents products={mockProducts} />
+      {products.length > 0 ? (
+        <SignatureScents products={products} />
+      ) : (
+        <div style={{ textAlign: 'center', padding: '100px' }}>
+          В каталоге пока нет ни одного аромата.
+        </div>
+      )}
     </>
   );
 }
