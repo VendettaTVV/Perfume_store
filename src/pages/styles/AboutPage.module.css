@@ -1,0 +1,130 @@
+/* Общий контейнер */
+.container {
+  width: 100%;
+  background-color: #f9f9f9; /* Очень светлый серый фон */
+  color: #333;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* --- Hero Section --- */
+.hero {
+  text-align: center;
+  padding: 80px 20px 80px; /* Увеличил отступ снизу, раз нет картинки */
+  background-color: #fff;
+}
+
+.title {
+  font-size: 3.5em;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  font-style: italic;
+  color: #666;
+  margin-bottom: 0; /* Убрал отступ снизу */
+}
+
+/* ❗️ Стили .heroImageContainer и .heroImage отсюда УДАЛЕНЫ */
+
+/* --- Story Section --- */
+.storySection {
+  max-width: 800px;
+  margin: 80px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 2em;
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+/* Декоративная линия под заголовком */
+.sectionTitle::after {
+  content: '';
+  display: block;
+  width: 60%;
+  height: 1px;
+  background-color: #333;
+  margin: 10px auto 0;
+}
+
+.text {
+  font-size: 1.1em;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* --- Philosophy Section --- */
+.philosophySection {
+  background-color: #fff; /* Белый фон для контраста */
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  max-width: 1000px;
+  margin: 50px auto 0;
+}
+
+.valueItem h3 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+.valueItem p {
+  font-size: 1em;
+  line-height: 1.6;
+  color: #666;
+}
+
+/* --- Founder / Quote Section --- */
+.founderSection {
+  padding: 100px 20px;
+  background-color: #1a1a1a; /* Темный фон */
+  color: #fff;
+  text-align: center;
+}
+
+.quoteBox {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.quote {
+  font-size: 1.8em;
+  font-style: italic;
+  font-family: 'Georgia', serif;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.author {
+  font-size: 1em;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5em;
+  }
+  .quote {
+    font-size: 1.4em;
+  }
+}

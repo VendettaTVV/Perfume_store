@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import styles from './styles/Auth.module.css';
-import { useNavigate } from 'react-router-dom'; // Импортируем для перенаправления
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 function LoginForm({ onSuccess }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Хук для навигации
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +21,6 @@ function LoginForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      // 1. Отправляем запрос на бэкенд
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,14 +28,17 @@ function LoginForm({ onSuccess }) {
       });
 
       if (response.ok) {
-        const data = await response.json(); // Ожидаем { token, user: { ... } }
+        const data = await response.json(); 
         
-        // 2. ❗ ВАЖНО: Сохраняем токен в браузере
+        // 1. ❗️ Сохраняем токен
         localStorage.setItem('authToken', data.token);
         
-        // 3. Вызываем onSuccess (если он есть) и перенаправляем на главную
+        // 2. ❗️ Сохраняем статус админа (как строку)
+        localStorage.setItem('isAdmin', data.user.isAdmin ? 'true' : 'false');
+        
         if (onSuccess) onSuccess(data.user);
-        navigate('/'); // Перенаправляем на главную страницу
+        showToast('Вход выполнен успешно!', 'success');
+        navigate('/'); // Перенаправляем на главную
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Неверный email или пароль.');

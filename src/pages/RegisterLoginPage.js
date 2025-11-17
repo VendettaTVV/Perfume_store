@@ -1,16 +1,24 @@
-// src/pages/RegisterLoginPage.js
 import React, { useState } from 'react';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
 import styles from './styles/RegisterLoginPage.module.css';
+// ❗️ Мы больше не импортируем useToast, так как уведомления 
+//    теперь обрабатываются ВНУТРИ LoginForm и RegisterForm
 
 function RegisterLoginPage() {
   const [isLogin, setIsLogin] = useState(true);
 
-  const handleSuccess = (userData) => {
-    // В реальном приложении: сохранить токен, обновить стейт аутентификации, перенаправить на главную
-    alert(`Успешный вход/регистрация для ${userData.name || userData.email}!`);
-    // Например, перенаправление: navigate('/');
+  // Эта функция теперь просто переключает вкладку на "Вход"
+  // после успешной регистрации.
+  const handleRegisterSuccess = () => {
+    setIsLogin(true); 
+  };
+
+  // Эта функция (для LoginForm) может остаться пустой,
+  // так как LoginForm сам перенаправляет на главную.
+  const handleLoginSuccess = (userData) => {
+    // alert() УБРАН ОТСЮДА
+    // LoginForm сам покажет toast
   };
 
   return (
@@ -31,9 +39,9 @@ function RegisterLoginPage() {
       </div>
       
       {isLogin ? (
-        <LoginForm onSuccess={handleSuccess} />
+        <LoginForm onSuccess={handleLoginSuccess} />
       ) : (
-        <RegisterForm onSuccess={handleSuccess} />
+        <RegisterForm onSuccess={handleRegisterSuccess} />
       )}
     </div>
   );

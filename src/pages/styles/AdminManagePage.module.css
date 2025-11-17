@@ -1,0 +1,189 @@
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  font-size: 2em;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #888;
+  font-size: 1.2em;
+}
+
+.productList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.productItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Стили для скрытого товара */
+.productItem.hidden {
+  background-color: #f9f9f9;
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.productImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #eee;
+  border: 1px solid #eee;
+}
+
+.productInfo {
+  flex-grow: 1;
+}
+
+.productName {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.productStock {
+  margin: 0;
+  font-size: 0.95em;
+  color: #666;
+}
+
+.productStock b {
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Кнопка Скрыть/Показать */
+.toggleBtn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.toggleBtn:hover {
+  background-color: #d0d0d0;
+}
+
+.toggleBtn.show {
+  background-color: #4CAF50; /* Зеленый */
+  color: white;
+}
+
+.toggleBtn.show:hover {
+  background-color: #45a049;
+}
+
+/* Кнопка Удалить */
+.deleteBtn {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.deleteBtn:hover {
+  background-color: #ffcdd2;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный черный фон */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.modalContent {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.modalContent h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.modalContent p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #555;
+}
+
+.modalWarning {
+  font-size: 0.9em !important; /* Уменьшаем шрифт и повышаем приоритет */
+  color: #c00 !important;
+  font-weight: bold;
+}
+
+.modalActions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modalBtnCancel {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.modalBtnCancel:hover {
+  background-color: #d0d0d0;
+}
+
+.modalBtnConfirm {
+  background-color: #d32f2f; /* Красный, как кнопка "Удалить" */
+  color: #fff;
+}
+
+.modalBtnConfirm:hover {
+  background-color: #b71c1c;
+}

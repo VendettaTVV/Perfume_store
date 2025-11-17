@@ -1,23 +1,29 @@
-/* src/components/styles/Header.module.css */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
+  padding: 15px 40px; /* Чуть уменьшил отступы, чтобы не занимал пол-экрана */
   background-color: #ffffff;
   border-bottom: 1px solid #eee;
   font-family: 'Times New Roman', Times, serif;
+  
+  /* 👇 МАГИЯ STICKY HEADER */
+  position: sticky; 
+  top: 0;
+  z-index: 1000; /* Чтобы хедер был поверх остальных элементов (фото, текстов) */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Легкая тень для отделения от контента */
+}
+
+.logoLink {
+  text-decoration: none;
+  color: inherit;
 }
 
 .logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.logoLink {
-  text-decoration: none; /* Убираем подчеркивание */
-  color: inherit; /* Наследуем цвет текста */
+  cursor: pointer;
 }
 
 .logoText {
@@ -28,14 +34,14 @@
 }
 
 .brandName {
-  font-size: 18px;
+  font-size: 20px; /* Чуть крупнее для читаемости */
   font-weight: bold;
   letter-spacing: 2px;
   color: #333;
 }
 
 .tagline {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 1px;
   color: #777;
   margin-top: 2px;
@@ -52,12 +58,64 @@
 .nav a {
   text-decoration: none;
   color: #333;
-  font-size: 14px;
-  letter-spacing: 0.8px;
+  font-size: 13px;
+  font-weight: 500; /* Чуть жирнее */
+  letter-spacing: 1px;
+  text-transform: uppercase;
   transition: color 0.3s ease;
+}
+
+.nav a:hover {
+  color: #000;
+  text-decoration: underline;
 }
 
 .icons {
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  align-items: center;
+}
+
+.icons a {
+  text-decoration: none;
+  color: #333;
+  transition: opacity 0.3s;
+}
+
+.icons a:hover {
+  opacity: 0.7;
+}
+
+/* Адаптивность для мобильных (упрощенная) */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 20px;
+  }
+  
+  .nav {
+    display: none; /* Скрываем меню на мобильных (в идеале нужен бургер) */
+  }
+
+  .brandName {
+    font-size: 16px;
+  }
+}
+.logoutButton {
+  background: none;
+  border: 1px solid #aaa;
+  color: #333;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
 }

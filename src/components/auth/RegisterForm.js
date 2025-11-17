@@ -1,11 +1,12 @@
-// src/components/auth/RegisterForm.js
 import React, { useState } from 'react';
-import styles from './styles/Auth.module.css';
+import styles from './styles/Auth.module.css'; // ❗️ Правильный импорт стилей
+import { useToast } from '../../context/ToastContext'; 
 
 function RegisterForm({ onSuccess }) {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,6 @@ function RegisterForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      // ✅ СТАЛО (указываем полный путь к нашему Node.js серверу)
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,10 +32,11 @@ function RegisterForm({ onSuccess }) {
       });
 
       if (response.ok) {
-        const data = { user: { id: 1, name: formData.name, email: formData.email } }; // Имитация ответа
-        onSuccess(data.user); 
+        showToast('Регистрация прошла успешно! Теперь вы можете войти.', 'success');
+        if (onSuccess) onSuccess(); 
       } else {
-        setError('Ошибка регистрации. Email может быть занят.');
+        const errorData = await response.json();
+        setError(errorData.message || 'Ошибка регистрации. Попробуйте снова.');
       }
     } catch (err) {
       setError('Ошибка сети. Проверьте ваше подключение.');

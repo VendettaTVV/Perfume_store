@@ -1,9 +1,11 @@
-/* src/components/styles/HeroSection.module.css */
 .hero {
   position: relative;
   width: 100%;
   height: 70vh; 
-  background-image: url('/public/images/hero-bg.png'); /* ⚠️ Замените путь! */
+  
+  /* ❗️❗️ СТРОКА background-image УДАЛЕНА ОТСЮДА ❗️❗️ */
+  /* Webpack теперь возьмет ее из инлайн-стиля в .js файле */
+  
   background-size: cover;
   background-position: center;
   display: flex;
@@ -14,6 +16,7 @@
   overflow: hidden;
 }
 
+/* Затемнение для читаемости */
 .hero::before {
   content: '';
   position: absolute;
@@ -28,7 +31,7 @@
 .heroContent {
   position: relative;
   z-index: 2;
-  max-width: 650px;
+  max-width: 600px;
   padding: 20px;
 }
 
@@ -37,29 +40,12 @@
   margin-bottom: 15px;
   letter-spacing: 2px;
   font-weight: normal;
-  font-style: italic;
-  font-family:'Lora', serif;
 }
 
 .subtitle {
   font-size: 1.2em;
   margin-bottom: 30px;
   line-height: 1.5;
-  font-style: italic;
 }
 
-.ctaButton {
-  background-color: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
-  padding: 10px 30px;
-  font-size: 1em;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.ctaButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
+/* Стили .ctaButton удалены */
