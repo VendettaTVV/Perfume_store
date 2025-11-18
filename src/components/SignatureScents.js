@@ -1,4 +1,3 @@
-// src/components/SignatureScents.js
 import React from 'react';
 import styles from './styles/SignatureScents.module.css';
 import ProductCard from './ProductCard';
@@ -9,7 +8,8 @@ function SignatureScents({ products }) {
       <h2 className={styles.title}>SIGNATURE SCENTS</h2>
       <div className={styles.productList}>
         {products.map(product => (
-          <ProductCard key={product.id} product={product} />
+          // ❗️ ИСПРАВЛЕНИЕ: Используем _id (от MongoDB) или id (резерв)
+          <ProductCard key={product._id || product.id} product={product} />
         ))}
       </div>
     </section>

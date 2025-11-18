@@ -1,4 +1,3 @@
-// src/context/CartContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
@@ -6,7 +5,6 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 // --- 1. Функция для ЗАГРУЗКИ корзины из localStorage ---
-// Мы выносим ее за пределы компонента
 const getInitialCart = () => {
   try {
     const savedCart = localStorage.getItem('perfumeCart');
@@ -20,11 +18,9 @@ const getInitialCart = () => {
 
 export const CartProvider = ({ children }) => {
   // --- 2. Инициализируем стейт С ПОМОЩЬЮ ФУНКЦИИ ---
-  // Этот код выполнится только один раз при запуске
   const [cartItems, setCartItems] = useState(getInitialCart);
 
   // --- 3. useEffect для СОХРАНЕНИЯ корзины ---
-  // Этот код будет срабатывать КАЖДЫЙ РАЗ, когда cartItems меняется
   useEffect(() => {
     try {
       localStorage.setItem('perfumeCart', JSON.stringify(cartItems));
@@ -33,7 +29,7 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartItems]); // Зависимость - cartItems
 
-  // --- (Остальная логика не изменилась) ---
+  // --- 4. Функции управления корзиной ---
 
   const addToCart = (product) => {
     setCartItems(prevItems => {
@@ -53,15 +49,25 @@ export const CartProvider = ({ children }) => {
     setCartItems(prevItems => prevItems.filter(item => item.cartItemId !== cartItemId));
   };
 
+  // ❗️ 👇 НОВАЯ ФУНКЦИЯ ОЧИСТКИ КОРЗИНЫ
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
+  // --- 5. Подсчеты ---
+
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  // --- 6. Провайдер ---
 
   return (
     <CartContext.Provider value={{ 
       cartItems, 
       addToCart, 
       removeFromCart,
+      clearCart, // ❗️ 👈 ДОБАВИЛИ clearCart В КОНТЕКСТ
       total,
       totalQuantity
     }}>

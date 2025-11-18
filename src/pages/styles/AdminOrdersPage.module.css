@@ -1,0 +1,156 @@
+/* src/pages/styles/AdminOrdersPage.module.css */
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header {
+  font-size: 2em;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2em;
+  padding: 50px;
+  color: #888;
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orderCard {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden; /* Важно для дочерних элементов */
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Для мобильных */
+  gap: 10px;
+  background: #f9f9f9;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.orderHeaderInfo p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #555;
+}
+.orderHeaderInfo p:first-child {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+.orderHeaderInfo span {
+  font-weight: 600;
+  color: #333;
+}
+
+.orderStatusSelect label {
+  font-size: 0.9em;
+  margin-right: 5px;
+  color: #555;
+}
+
+.statusSelect {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+/* Цветовая кодировка статусов (опционально) */
+/* .statusSelect option[value="Оплачено"] { color: green; } */
+
+
+.orderBody {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.itemsList h4, .shippingInfo h4 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+.item {
+  display: flex;
+  gap: 15px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.itemImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: #eee;
+}
+
+.itemInfo p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #444;
+}
+.itemName {
+  font-weight: 600;
+  color: #000;
+}
+
+.shippingInfo p {
+  margin: 5px 0;
+  line-height: 1.5;
+  font-size: 0.95em;
+}
+.shippingAddress {
+  font-style: italic;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .orderBody {
+    grid-template-columns: 1fr;
+  }
+  
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .statusSelect {
+    width: 100%;
+  }
+}
