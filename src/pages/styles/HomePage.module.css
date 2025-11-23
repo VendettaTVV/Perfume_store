@@ -1,0 +1,21 @@
+.container {
+  max-width: auto;
+  margin: 0 auto;
+  padding: 0px;
+}
+
+.searchTitle {
+  text-align: center;
+  margin-top: 40px;
+  font-family: 'Times New Roman', serif;
+  color: #333;
+  font-size: 2em;
+}
+
+.message {
+  text-align: center;
+  padding: 80px 20px;
+  color: #777;
+  font-size: 1.2em;
+  font-style: italic;
+}

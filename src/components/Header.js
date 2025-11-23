@@ -1,67 +1,107 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './styles/Header.module.css';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
 
-const CartIcon = ({ count }) => <div style={{ fontWeight: 'bold' }}>🛒({count})</div>;
-const UserIcon = () => <div>👤</div>;
+// Иконки
+const CartIcon = ({ count }) => (
+  <div style={{position: 'relative', display: 'flex', alignItems: 'center'}}>
+    <span style={{fontSize: '1.4em'}}>🛒</span>
+    {count > 0 && (
+      <span className={styles.cartCount}>{count}</span>
+    )}
+  </div>
+);
+
+const UserIcon = () => <span style={{fontSize: '1.4em'}}>👤</span>;
 
 function Header() {
   const { totalQuantity } = useCart();
-  const { showToast } = useToast();
   const navigate = useNavigate();
   
   const token = localStorage.getItem('authToken');
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+  const [keyword, setKeyword] = useState('');
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      navigate(`/?keyword=${keyword}`);
+    } else {
+      navigate('/');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAdmin');
-    showToast('Вы успешно вышли из системы.', 'success');
+    localStorage.removeItem('userId');
     navigate('/');
   };
 
   return (
     <header className={styles.header}>
+      {/* ЛЕВАЯ ЧАСТЬ: Логотип (Playfair Display) */}
       <Link to="/" className={styles.logoLink}>
         <div className={styles.logo}>
-          <span className={styles.logoText}>HTML/CSS and JavaScript React</span>
           <span className={styles.brandName}>AROMATICUS</span>
           <span className={styles.tagline}>THE SCENT OF STORIES</span>
         </div>
       </Link>
-      
-      <nav className={styles.nav}>
-        <ul>
-          <li><Link to="/">COLLECTION</Link></li>
-          <li><Link to="/about">ABOUT US</Link></li>
-          <li><Link to="/contact">CONTACT</Link></li>
-          
-          {isAdmin && (
-            <>
-              <li><Link to="/admin/add" style={{color: '#c0392b'}}>+ Добавить Товар</Link></li>
-              <li><Link to="/admin/manage" style={{color: '#2980b9'}}>Заказы</Link></li>
-              {/* ❗️ НОВАЯ ССЫЛКА ДЛЯ УПРАВЛЕНИЯ ТОВАРАМИ */}
-              <li><Link to="/admin/products" style={{color: '#27ae60'}}>Товары</Link></li>
-            </>
-          )}
-        </ul>
-      </nav>
-      
-      <div className={styles.icons}>
-        <Link to="/cart">
-          <CartIcon count={totalQuantity} />
-        </Link>
-        {token ? (
-          <button onClick={handleLogout} className={styles.logoutButton}>
-            ВЫХОД
-          </button>
-        ) : (
-          <Link to="/auth">
-            <UserIcon />
-          </Link>
+
+      {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ: Слоган (Great Vibes) */}
+      <div className={styles.centerSection}>
+        <p className={styles.slogan}>Perfume is memory that never fails</p>
+        <p className={styles.subSlogan}>Original Niche Perfume Decants</p>
+        
+        {/* Админ-меню */}
+        {isAdmin && (
+          <nav className={styles.adminNav}>
+            <Link to="/admin/add" style={{color: '#c0392b'}}>+ Товар</Link>
+            <Link to="/admin/orders" style={{color: '#2980b9'}}>Заказы</Link>
+            <Link to="/admin/products" style={{color: '#27ae60'}}>Склад</Link>
+            <Link to="/admin/analytics" style={{color: '#f39c12'}}>Отчеты</Link>
+          </nav>
         )}
+      </div>
+      
+      {/* ПРАВАЯ ЧАСТЬ: Поиск (без лупы) + Текст */}
+      <div className={styles.rightSection}>
+        
+        <form onSubmit={submitHandler} className={styles.searchForm}>
+          <input
+            type="text"
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Поиск..."
+            className={styles.searchInput}
+          />
+        </form>
+
+        <div className={styles.icons}>
+          <Link to="/cart" className={styles.iconLink} title="Корзина">
+            <CartIcon count={totalQuantity} />
+          </Link>
+          
+          <div className={styles.authBlock}>
+            {token ? (
+              <>
+                <Link to="/profile" className={styles.iconLinkWithText}>
+                   <UserIcon />
+                   <span>Кабинет</span>
+                </Link>
+                <button onClick={handleLogout} className={styles.logoutTextBtn}>
+                   Выйти
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" className={styles.iconLinkWithText}>
+                <UserIcon />
+                <span>Войти</span>
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

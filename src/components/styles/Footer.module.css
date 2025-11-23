@@ -1,31 +1,81 @@
-/* src/components/styles/Footer.module.css */
 .footer {
+  background-color: #1a1a1a; /* Темный, дорогой цвет */
+  color: #ffffff;
+  padding: 80px 40px 30px;
+  font-family: 'Segoe UI', sans-serif;
+  margin-top: auto; /* Прижимает футер к низу, если контента мало */
+}
+
+.topSection {
+  display: grid;
+  /* 4 колонки: Бренд (пошире) | Меню | Помощь | Соцсети */
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Колонка Бренда --- */
+.brandColumn {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  background-color: #333;
-  color: #ccc;
-  font-size: 0.9em;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.links {
-  display: flex;
-  gap: 20px;
-}
-
-.links a {
-  color: #ccc;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.links a:hover {
+.brandName {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   color: #fff;
 }
 
-.copyright {
-  margin-left: 20px;
+.footerText {
+  font-size: 0.9em;
+  line-height: 1.6;
+  color: #ccc; /* Чуть приглушенный текст */
+  max-width: 300px;
+}
+
+/* --- Колонки Ссылок --- */
+.linksColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linksColumn h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1em;
+  margin: 0 0 10px 0;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.link {
+  text-decoration: none;
+  color: #aaa;
+  font-size: 0.95em;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.link:hover {
+  color: #fff;
+  transform: translateX(5px); /* Легкий сдвиг при наведении */
+}
+
+/* --- Соцсети --- */
+.socialColumn h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1em;
+  margin: 0 0 15px 0;
+  color: #fff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .socialIcons {
@@ -33,7 +83,63 @@
   gap: 15px;
 }
 
-.socialIcons span {
-  font-size: 1.2em;
-  cursor: pointer;
+.socialLink {
+  color: #fff;
+  font-size: 0.9em;
+  text-decoration: none;
+  border: 1px solid #444;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.socialLink:hover {
+  background-color: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* --- Нижняя часть (Копирайт) --- */
+.bottomSection {
+  border-top: 1px solid #333;
+  padding-top: 30px;
+  text-align: center;
+  font-size: 0.85em;
+  color: #777;
+}
+
+.copyright {
+  letter-spacing: 1px;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+  .topSection {
+    grid-template-columns: 1fr 1fr; /* 2 колонки на планшетах */
+    gap: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 60px 20px 30px;
+  }
+  
+  .topSection {
+    grid-template-columns: 1fr; /* 1 колонка на телефонах */
+    text-align: center;
+    gap: 50px;
+  }
+  
+  .brandColumn {
+    align-items: center;
+  }
+  
+  .footerText {
+    margin: 0 auto;
+  }
+  
+  .socialIcons {
+    justify-content: center;
+  }
 }

@@ -1,47 +1,167 @@
-/* src/components/styles/ProductCard.module.css */
-
 .cardLink {
-  text-decoration: none; /* Убираем подчеркивание у ссылки */
+  text-decoration: none;
   color: inherit;
   display: block;
+  heig.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
 .card {
-  width: 250px;
+  height: 100%;
   padding: 20px;
   text-align: center;
-  background-color: #D4CFCB;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
+  /* ❗️ Изменил цвет фона на более светлый */
+  background-color: #f1eded; /* Или #fafafa для еще более светлого */
+  
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  border: 1px solid #eee; /* Добавил тонкую рамку для контраста */
+  
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  align-items: center;
+  
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  box-sizing: border-box;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.outOfStock {
+  opacity: 0.8;
+}
+.outOfStock .image {
+  filter: grayscale(100%);
+  opacity: 0.7;
+}
+
+.soldOutBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #333;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  z-index: 2;
+  letter-spacing: 1px;
 }
 
 .image {
-  max-width: 100%;
-  height: 200px; /* Задаем фиксированную высоту для единообразия */
+  width: 100%;
+  height: 220px;
   object-fit: cover;
   margin-bottom: 15px;
+  border-radius: 2px;
 }
 
 .name {
-  font-size: 1.2em;
-  margin-bottom: 5px;
+  font-size: 1.1em;
+  margin: 0 0 10px 0;
   color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .price {
-  font-size: 1.1em;
-  font-weight: bold;
+  font-size: 1em;
+  font-weight: 600;
   color: #333;
-  margin-top: auto; /* Прижимаем цену к низу, если описание разной высоты */
+  margin-top: auto; 
   padding-top: 10px;
+} height: 100%; /* Растягиваем ссылку на всю высоту ячейки сетки */
+  width: 100%;  /* Занимаем всю ширину */
 }
 
-/* ❗ УДАЛИТЕ .variantSelector, .variantButton, .addToCartButton из этого файла */
+.card {
+  height: 100%; /* Растягиваем саму карточку */
+  padding: 20px;
+  text-align: center;
+  background-color: #dad7d4; /* Ваш цвет фона */
+  
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  
+  display: flex;
+  flex-direction: column; /* Вертикальное выравнивание элементов */
+  align-items: center;
+  
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  box-sizing: border-box; /* Важно для padding */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для отсутствующего товара */
+.outOfStock {
+  opacity: 0.8;
+}
+.outOfStock .image {
+  filter: grayscale(100%); /* Делаем фото черно-белым */
+  opacity: 0.7;
+}
+
+/* Бейдж */
+.soldOutBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #333;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  z-index: 2;
+  letter-spacing: 1px;
+}
+
+.image {
+  width: 100%;
+  height: 220px; /* Фиксированная высота картинки для ровности */
+  object-fit: cover; /* Обрезаем лишнее, сохраняя пропорции */
+  margin-bottom: 15px;
+  border-radius: 2px;
+}
+
+.name {
+  font-size: 1.1em;
+  margin: 0 0 10px 0;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* Если название очень длинное, обрезаем его троеточием после 2 строк */
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price {
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  
+  /* Самое важное: этот отступ заставляет цену "прилипнуть" к низу карточки,
+     заполняя все свободное пространство сверху */
+  margin-top: auto; 
+  padding-top: 10px;
+}

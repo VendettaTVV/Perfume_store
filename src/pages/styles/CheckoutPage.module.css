@@ -6,6 +6,7 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
   font-family: 'Segoe UI', sans-serif;
+  /* align-items: stretch; - это значение по умолчанию для Grid, оно делает колонки равными */
 }
 
 .title {
@@ -17,12 +18,19 @@
   padding-bottom: 10px;
 }
 
-/* --- Форма --- */
+/* --- Левая Колонка (Форма) --- */
 .formColumn {
   background: #fff;
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  /* Добавляем flex, чтобы контент занимал всю высоту при необходимости */
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  height: 100%; /* Форма занимает всю высоту колонки */
 }
 
 .form h2 {
@@ -86,14 +94,23 @@
   margin-right: 10px;
 }
 
-/* --- Итог --- */
+/* --- Правая Колонка (Итог) --- */
 .summaryColumn {
   background: #fcfcfc;
   padding: 30px;
   border-radius: 8px;
   border: 1px solid #eee;
-  height: fit-content;
+  
+  /* ❗️ ИЗМЕНЕНИЕ: Убрали height: fit-content */
+  /* Теперь блок растянется на всю высоту соседней колонки */
+  display: flex;
+  flex-direction: column;
 }
+
+/* Добавляем flex-grow последнему элементу перед кнопкой, 
+   если хотите, чтобы кнопка всегда была в самом низу блока.
+   Если нет, этот блок можно пропустить. 
+*/
 
 .summaryColumn h2 {
   font-size: 1.3em;
@@ -104,7 +121,7 @@
 
 .summaryItems {
   margin-bottom: 20px;
-  max-height: 200px;
+  max-height: 300px; /* Чуть увеличили место для списка */
   overflow-y: auto;
 }
 
@@ -116,11 +133,85 @@
   color: #555;
 }
 
+/* --- Стили Купона --- */
+.couponSection {
+  margin: 20px 0;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  margin-top: auto; /* ❗️ Прижимаем купон и итог к низу, если колонка растянулась */
+}
+
+.couponLabel {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.couponForm {
+  display: flex;
+}
+
+.couponInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 0.95em;
+  outline: none;
+}
+
+.couponInput:focus {
+  border-color: #333;
+}
+
+.couponBtn {
+  padding: 0 15px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #333;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.couponBtn:hover {
+  background-color: #555;
+  border-color: #555;
+}
+
+.couponRemoveBtn {
+  padding: 0 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: 1px solid #e74c3c;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.couponSuccess {
+  color: #27ae60;
+  font-size: 0.9em;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+/* --- Итоговые суммы --- */
 .summaryRow {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
   color: #666;
+}
+
+.discountRow {
+  color: #27ae60;
+  font-weight: 500;
 }
 
 .summaryTotal {
@@ -163,6 +254,6 @@
     grid-template-columns: 1fr;
   }
   .summaryColumn {
-    order: -1; /* На мобильных итог сверху */
+    order: -1;
   }
 }

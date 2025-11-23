@@ -2,120 +2,227 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px; /* Чуть уменьшил отступы, чтобы не занимал пол-экрана */
+  padding: 15px 40px;
   background-color: #ffffff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0;
   font-family: 'Times New Roman', Times, serif;
-  
-  /* 👇 МАГИЯ STICKY HEADER */
-  position: sticky; 
+  position: sticky;
   top: 0;
-  z-index: 1000; /* Чтобы хедер был поверх остальных элементов (фото, текстов) */
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Легкая тень для отделения от контента */
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.02);
 }
 
 .logoLink {
   text-decoration: none;
   color: inherit;
+  flex: 1;
 }
 
 .logo {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  cursor: pointer;
+  align-items: flex-start;
 }
 
-.logoText {
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: #777;
-  margin-bottom: 3px;
-}
-
+/* ❗️ Стильное Название (Playfair Display) */
 .brandName {
-  font-size: 20px; /* Чуть крупнее для читаемости */
-  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
   letter-spacing: 2px;
-  color: #333;
-}
-
-.tagline {
-  font-size: 11px;
-  letter-spacing: 1px;
-  color: #777;
-  margin-top: 2px;
-}
-
-.nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 30px;
-}
-
-.nav a {
-  text-decoration: none;
-  color: #333;
-  font-size: 13px;
-  font-weight: 500; /* Чуть жирнее */
-  letter-spacing: 1px;
+  color: #1a1a1a;
   text-transform: uppercase;
-  transition: color 0.3s ease;
+  line-height: 1;
 }
 
-.nav a:hover {
-  color: #000;
-  text-decoration: underline;
+/* ❗️ Стильный подзаголовок логотипа */
+.tagline {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #888;
+  margin-top: 6px;
+  text-transform: uppercase;
 }
 
+/* --- ЦЕНТРАЛЬНАЯ ЧАСТЬ (СЛОГАН) --- */
+.centerSection {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ❗️ Красивый рукописный шрифт по центру */
+.slogan {
+  font-family: 'Great Vibes', cursive; 
+  font-size: 2em; /* Крупно и красиво */
+  margin: 0;
+  color: #333;
+  line-height: 1.2;
+}
+
+.subSlogan {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #999;
+  margin: 5px 0 0 0;
+  font-weight: 600;
+}
+
+.adminNav {
+  margin-top: 8px;
+  font-size: 0.85em;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  gap: 15px;
+}
+
+.adminNav a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* --- ПРАВАЯ ЧАСТЬ --- */
+.rightSection {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Поиск (Чистая капсула без кнопки) */
+.searchForm {
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  background-color: #f9f9f9;
+  border: 1px solid transparent;
+  border-radius: 50px;
+  padding: 8px 15px;
+  width: 180px;
+  font-size: 13px;
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
+  outline: none;
+  transition: all 0.3s ease;
+  text-align: center; /* Текст по центру */
+}
+
+.searchInput:focus {
+  background-color: #fff;
+  border-color: #e0e0e0;
+  width: 220px; /* Расширяется при фокусе */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.searchInput::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Иконки и Текст */
 .icons {
   display: flex;
-  gap: 20px;
   align-items: center;
+  gap: 20px;
 }
 
-.icons a {
+.iconLink {
   text-decoration: none;
   color: #333;
   transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
 }
 
-.icons a:hover {
-  opacity: 0.7;
-}
-
-/* Адаптивность для мобильных (упрощенная) */
-@media (max-width: 768px) {
-  .header {
-    padding: 15px 20px;
-  }
-  
-  .nav {
-    display: none; /* Скрываем меню на мобильных (в идеале нужен бургер) */
-  }
-
-  .brandName {
-    font-size: 16px;
-  }
-}
-.logoutButton {
-  background: none;
-  border: 1px solid #aaa;
+.iconLinkWithText {
+  text-decoration: none;
   color: #333;
-  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: opacity 0.3s;
+}
+
+.iconLinkWithText:hover, .iconLink:hover {
+  opacity: 0.6;
+}
+
+.authBlock {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-left: 1px solid #eee;
+  padding-left: 20px;
+}
+
+.logoutTextBtn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 11px;
   text-transform: uppercase;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  padding: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.logoutButton:hover {
+.logoutTextBtn:hover {
+  color: #c0392b;
+  text-decoration: underline;
+}
+
+.cartCount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
   background-color: #333;
   color: #fff;
-  border-color: #333;
+  border-radius: 50%;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: bold;
+  min-width: 14px;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+  .logoLink, .centerSection, .rightSection {
+    width: 100%;
+    flex: auto;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo { align-items: center; }
+  
+  .rightSection {
+    justify-content: space-between;
+  }
+  .authBlock {
+    border-left: none;
+    padding-left: 0;
+  }
 }

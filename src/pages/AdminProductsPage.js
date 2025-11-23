@@ -1,9 +1,55 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './styles/AdminProductsPage.module.css'; 
+import styles from './styles/AdminProductsPage.module.css';
 import { useToast } from '../context/ToastContext';
 
-// Компонент модального окна
+// --- Модальное окно ПОПОЛНЕНИЯ (Restock) ---
+const RestockModal = ({ product, onConfirm, onCancel }) => {
+  const [amountToAdd, setAmountToAdd] = useState('');
+
+  if (!product) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Передаем введенное число в функцию подтверждения
+    onConfirm(Number(amountToAdd));
+    setAmountToAdd(''); // Сброс
+  };
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <h3>Пополнить склад: {product.name}</h3>
+        <p>Текущий остаток: <b>{product.totalStockMl} мл</b></p>
+        
+        <form onSubmit={handleSubmit}>
+          <label style={{display: 'block', textAlign: 'left', marginBottom: 5, fontSize: '0.9em'}}>
+            Сколько мл добавить?
+          </label>
+          <input 
+            type="number" 
+            className={styles.restockInput}
+            value={amountToAdd}
+            onChange={(e) => setAmountToAdd(e.target.value)}
+            placeholder="Например: 1000"
+            min="1"
+            required
+            autoFocus
+          />
+          
+          <div className={styles.modalActions}>
+            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
+            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#27ae60'}}>
+              Добавить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// --- Модальное окно УДАЛЕНИЯ ---
 const ConfirmDeleteModal = ({ product, onConfirm, onCancel }) => {
   if (!product) return null;
   return (
@@ -23,7 +69,10 @@ const ConfirmDeleteModal = ({ product, onConfirm, onCancel }) => {
 function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Состояния для модалок
   const [productToDelete, setProductToDelete] = useState(null);
+  const [productToRestock, setProductToRestock] = useState(null); // 👈 Для пополнения
 
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -45,7 +94,6 @@ function AdminProductsPage() {
       const token = localStorage.getItem('authToken');
       if (!token) { navigate('/auth'); return; }
 
-      // ❗️ ЗАПРОС ТОВАРОВ
       const response = await fetch('http://localhost:5000/api/products/all', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -63,6 +111,8 @@ function AdminProductsPage() {
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
+
+  // --- ФУНКЦИИ ---
 
   const toggleVisibility = async (id, currentStatus) => {
     try {
@@ -96,14 +146,55 @@ function AdminProductsPage() {
     }
   };
 
+  // ❗️ ФУНКЦИЯ ПОПОЛНЕНИЯ СКЛАДА
+  const handleConfirmRestock = async (addedAmount) => {
+    if (!productToRestock || !addedAmount) return;
+    
+    // Считаем новый общий итог
+    const newTotal = productToRestock.totalStockMl + addedAmount;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`http://localhost:5000/api/products/${productToRestock._id}`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}` 
+        },
+        // Отправляем новое значение totalStockMl
+        body: JSON.stringify({ totalStockMl: newTotal }) 
+      });
+
+      if (handleAuthError(response)) return;
+      
+      if (response.ok) {
+        showToast(`Добавлено ${addedAmount} мл. Новый остаток: ${newTotal} мл`, 'success');
+        fetchAllProducts(); // Обновляем список
+      }
+    } catch (err) {
+      showToast('Ошибка пополнения', 'error');
+    } finally {
+      setProductToRestock(null); // Закрываем окно
+    }
+  };
+
   if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Загрузка товаров...</div>;
 
   return (
     <div className={styles.container}>
+      
+      {/* Модалка Удаления */}
       <ConfirmDeleteModal 
         product={productToDelete} 
         onConfirm={handleConfirmDelete} 
         onCancel={() => setProductToDelete(null)} 
+      />
+
+      {/* ❗️ Модалка Пополнения */}
+      <RestockModal 
+        product={productToRestock}
+        onConfirm={handleConfirmRestock}
+        onCancel={() => setProductToRestock(null)}
       />
 
       <h1 className={styles.header}>Управление Товарами (Склад)</h1>
@@ -111,42 +202,38 @@ function AdminProductsPage() {
       <div className={styles.productList}>
         {products.map(product => (
           <div key={product._id} className={`${styles.productItem} ${product.isHidden ? styles.hidden : ''}`}>
-            
-            {/* Картинка */}
-            <img 
-              src={product.variants[0]?.image} 
-              alt="" 
-              className={styles.productImage}
-            />
+            <img src={product.variants[0]?.image} alt="" className={styles.productImage}/>
             
             <div className={styles.productInfo}>
               <h3 className={styles.productName}>
                 {product.name} {product.isHidden && '(Скрыт)'}
               </h3>
               <p className={styles.productStock}>
-                Общий запас: <b>{product.totalStockMl} мл</b>
+                Запас: <b style={{color: product.totalStockMl < 50 ? 'red' : 'green'}}>{product.totalStockMl} мл</b>
               </p>
             </div>
 
             <div className={styles.actions}>
+              
+              {/* ❗️ Кнопка Пополнить */}
               <button 
-                className={`${styles.btn} ${styles.toggleBtn}`} 
-                onClick={() => toggleVisibility(product._id, product.isHidden)}
+                className={`${styles.btn} ${styles.restockBtn}`} 
+                onClick={() => setProductToRestock(product)}
+                title="Пополнить склад"
               >
+                + МЛ
+              </button>
+
+              <button className={`${styles.btn} ${styles.toggleBtn}`} onClick={() => toggleVisibility(product._id, product.isHidden)}>
                 {product.isHidden ? 'Показать' : 'Скрыть'}
               </button>
               
-              <button 
-                className={`${styles.btn} ${styles.deleteBtn}`} 
-                onClick={() => setProductToDelete(product)}
-              >
+              <button className={`${styles.btn} ${styles.deleteBtn}`} onClick={() => setProductToDelete(product)}>
                 Удалить
               </button>
             </div>
           </div>
         ))}
-        
-        {products.length === 0 && <p>Товаров пока нет.</p>}
       </div>
     </div>
   );
