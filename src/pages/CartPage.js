@@ -6,6 +6,11 @@ import styles from './styles/CartPage.module.css';
 function CartPage() {
   const { cartItems, removeFromCart, total } = useCart();
 
+  // ❗️ Логика бесплатной доставки
+  const FREE_SHIPPING_THRESHOLD = 50;
+  const progress = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const remaining = FREE_SHIPPING_THRESHOLD - total;
+
   if (cartItems.length === 0) {
     return <h2 className={styles.emptyCart}>Ваша корзина пуста. Начните покупки!</h2>;
   }
@@ -13,6 +18,23 @@ function CartPage() {
   return (
     <div className={styles.container}>
       <h1>Ваша Корзина</h1>
+      
+      {/* ❗️ ПРОГРЕСС-БАР */}
+      <div className={styles.shippingProgressContainer}>
+        <p className={styles.shippingText}>
+          {remaining > 0 
+            ? <>Добавьте товаров на <b>£{remaining.toFixed(2)}</b>, чтобы получить <b>БЕСПЛАТНУЮ ДОСТАВКУ</b></>
+            : <span style={{color: '#27ae60'}}>Поздравляем! У вас бесплатная доставка 🎉</span>
+          }
+        </p>
+        <div className={styles.progressBarBg}>
+          <div 
+            className={styles.progressBarFill} 
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
+
       <div className={styles.cartList}>
         {cartItems.map(item => (
           <div key={item.cartItemId} className={styles.cartItem}>
@@ -38,8 +60,6 @@ function CartPage() {
       
       <div className={styles.summary}>
         <h2>Общая Сумма: £{total.toFixed(2)}</h2>
-        
-        {/* КНОПКА ТЕПЕРЬ ПРОСТО ВЕДЕТ НА СТРАНИЦУ ОФОРМЛЕНИЯ */}
         <Link to="/checkout" className={styles.checkoutButton}>
             ПЕРЕЙТИ К ОФОРМЛЕНИЮ
         </Link>

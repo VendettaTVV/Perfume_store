@@ -1,49 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './styles/ProductCard.module.css';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 function ProductCard({ product }) {
-  // 1. Находим самый маленький объем флакона у этого товара
+  const { showToast } = useToast();
+  
+  // В идеале здесь нужно проверять, лайкнут ли товар при загрузке,
+  // но для простоты пока сделаем локальный стейт (сердечко загорится при клике)
+  const [isLiked, setIsLiked] = useState(false);
+
   const minSize = product.variants.reduce(
     (min, v) => (v.size < min ? v.size : min),
     product.variants[0].size
   );
 
-  // 2. Находим стартовую цену
   const startingPrice = product.variants.reduce(
     (min, v) => (v.price < min ? v.price : min),
     product.variants[0].price
   );
 
   const mainImage = product.variants[0].image;
-
-  // 3. ГЛАВНАЯ ПРОВЕРКА: Хватает ли запаса хотя бы на минимальный флакон?
   const isOutOfStock = product.totalStockMl < minSize;
 
-  return (
-    <Link to={`/product/${product._id}`} className={styles.cardLink}>
-      <div 
-        className={`${styles.card} ${isOutOfStock ? styles.outOfStock : ''}`} 
-        /* ❗️ УБРАЛ style={{ backgroundColor: product.bgColor }} */
-        /* Теперь цвет будет браться из CSS файла */
-      >
-        
-        {/* 4. Показываем бейдж, если нет в наличии */}
-        {isOutOfStock && <span className={styles.soldOutBadge}>Sold Out</span>}
+  // Функция лайка
+  const handleLike = async (e) => {
+    e.preventDefault(); // Чтобы не переходить по ссылке карточки
+    e.stopPropagation();
 
-        <img src={mainImage} alt={product.name} className={styles.image} />
-        
-        <h3 className={styles.name}>{product.name}</h3>
-        
-        {/* 5. Меняем цену на надпись */}
-        {isOutOfStock ? (
-           <p className={styles.price} style={{color: '#666', fontStyle: 'italic'}}>Нет в наличии</p>
-        ) : (
-           <p className={styles.price}>От £{startingPrice.toFixed(2)}</p>
-        )}
-        
-      </div>
-    </Link>
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      showToast('Войдите, чтобы добавить в избранное', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/user/wishlist/${product._id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setIsLiked(data.isLiked);
+        showToast(data.message, 'success');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className={styles.cardWrapper}>
+      <Link to={`/product/${product._id}`} className={styles.cardLink}>
+        <div className={`${styles.card} ${isOutOfStock ? styles.outOfStock : ''}`}>
+          
+          {isOutOfStock && <span className={styles.soldOutBadge}>Sold Out</span>}
+
+          {/* ❗️ КНОПКА ЛАЙКА */}
+          <button 
+            className={`${styles.likeBtn} ${isLiked ? styles.liked : ''}`} 
+            onClick={handleLike}
+            title="Добавить в избранное"
+          >
+            ♥
+          </button>
+
+          <img src={mainImage} alt={product.name} className={styles.image} />
+          
+          <h3 className={styles.name}>{product.name}</h3>
+          
+          {isOutOfStock ? (
+             <p className={styles.price} style={{color: '#666', fontStyle: 'italic'}}>Нет в наличии</p>
+          ) : (
+             <p className={styles.price}>От £{startingPrice.toFixed(2)}</p>
+          )}
+          
+        </div>
+      </Link>
+    </div>
   );
 }
 

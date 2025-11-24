@@ -1,5 +1,5 @@
 .container {
-  max-width: 800px;
+  max-width: 1000px; /* Увеличили ширину для сетки товаров */
   margin: 40px auto;
   padding: 0 20px;
   font-family: 'Segoe UI', sans-serif;
@@ -15,55 +15,119 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .header h1 {
   margin: 0;
   font-size: 2em;
-  color: #333;
-  font-family: 'Times New Roman', serif;
+  color: #1a1a1a;
+  font-family: 'Playfair Display', serif;
 }
 
 .logoutBtn {
   background: none;
   border: 1px solid #ccc;
-  padding: 8px 16px;
+  padding: 8px 20px;
   cursor: pointer;
   font-size: 0.9em;
   transition: all 0.2s;
   border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logoutBtn:hover {
-  background: #333;
+  background: #1a1a1a;
   color: #fff;
-  border-color: #333;
+  border-color: #1a1a1a;
 }
 
-.ordersSection h2 {
-  font-size: 1.4em;
-  margin-bottom: 20px;
-  color: #555;
+/* --- СТИЛИ ВКЛАДОК --- */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 40px;
 }
 
-.noOrders {
-  color: #888;
-  font-style: italic;
+.tabBtn {
+  padding: 15px 30px;
+  background: none;
+  border: none;
+  font-size: 1em;
+  color: #777;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+}
+
+.tabBtn:hover {
+  color: #333;
+}
+
+.activeTab {
+  color: #1a1a1a;
+}
+
+/* Линия под активной вкладкой */
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1a1a1a;
+}
+
+/* --- Пустое состояние --- */
+.emptyState {
   text-align: center;
-  margin-top: 40px;
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
-/* Карточка заказа */
+.emptyState p {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.shopLink {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: #1a1a1a;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.shopLink:hover {
+  background-color: #333;
+}
+
+/* --- Сетка Вишлиста --- */
+.wishlistGrid {
+  display: grid;
+  /* Адаптивная сетка */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
+
+/* --- Стили Заказов --- */
 .orderCard {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 20px;
   background: #fff;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
 }
 
 .orderHeader {
@@ -87,7 +151,7 @@
 }
 
 .orderStatus b {
-  color: #27ae60; /* Зеленый */
+  color: #27ae60;
 }
 
 .orderBody {
@@ -149,4 +213,24 @@
   font-size: 1.2em;
   font-weight: bold;
   color: #000;
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .tabs {
+    flex-direction: column;
+  }
+  .tabBtn {
+    width: 100%;
+    text-align: left;
+  }
 }

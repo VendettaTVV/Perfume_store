@@ -33,16 +33,9 @@ function Header() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('isAdmin');
-    localStorage.removeItem('userId');
-    navigate('/');
-  };
-
   return (
     <header className={styles.header}>
-      {/* ЛЕВАЯ ЧАСТЬ: Логотип (Playfair Display) */}
+      {/* ЛЕВАЯ ЧАСТЬ: Логотип */}
       <Link to="/" className={styles.logoLink}>
         <div className={styles.logo}>
           <span className={styles.brandName}>AROMATICUS</span>
@@ -50,7 +43,7 @@ function Header() {
         </div>
       </Link>
 
-      {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ: Слоган (Great Vibes) */}
+      {/* ЦЕНТРАЛЬНАЯ ЧАСТЬ: Слоган */}
       <div className={styles.centerSection}>
         <p className={styles.slogan}>Perfume is memory that never fails</p>
         <p className={styles.subSlogan}>Original Niche Perfume Decants</p>
@@ -66,7 +59,7 @@ function Header() {
         )}
       </div>
       
-      {/* ПРАВАЯ ЧАСТЬ: Поиск (без лупы) + Текст */}
+      {/* ПРАВАЯ ЧАСТЬ */}
       <div className={styles.rightSection}>
         
         <form onSubmit={submitHandler} className={styles.searchForm}>
@@ -85,16 +78,13 @@ function Header() {
           
           <div className={styles.authBlock}>
             {token ? (
-              <>
-                <Link to="/profile" className={styles.iconLinkWithText}>
-                   <UserIcon />
-                   <span>Кабинет</span>
-                </Link>
-                <button onClick={handleLogout} className={styles.logoutTextBtn}>
-                   Выйти
-                </button>
-              </>
+              // Если вошел - ссылка только на Кабинет (там есть выход)
+              <Link to="/profile" className={styles.iconLinkWithText}>
+                 <UserIcon />
+                 <span>Кабинет</span>
+              </Link>
             ) : (
+              // Если не вошел - ссылка на Вход
               <Link to="/auth" className={styles.iconLinkWithText}>
                 <UserIcon />
                 <span>Войти</span>

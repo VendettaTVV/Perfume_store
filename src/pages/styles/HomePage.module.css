@@ -1,13 +1,14 @@
 .container {
-  max-width: auto;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0px;
+  padding: 0 20px; /* Убрали вертикальные отступы у контейнера */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .searchTitle {
   text-align: center;
   margin-top: 40px;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Playfair Display', serif;
   color: #333;
   font-size: 2em;
 }
@@ -18,4 +19,73 @@
   color: #777;
   font-size: 1.2em;
   font-style: italic;
+}
+
+/* --- СТИЛИ ДЛЯ БАННЕРА DISCOVERY SET (Обновленные) --- */
+.discoveryBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  
+  /* ❗️ УБРАЛИ лишние отступы и рамки */
+  padding: 10px 20px 20px; /* Сверху отступ от хедера/баннера, снизу меньше */
+  margin: 0 auto; /* Убрали внешние отступы */
+  max-width: 800px;
+  
+  /* ❗️ Делаем блок прозрачным и бесшовным */
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.discoveryTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5em;
+  margin-bottom: 15px;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 400; /* Тонкий шрифт выглядит премиально */
+}
+
+.discoveryText {
+  font-family: 'Segoe UI', sans-serif;
+  color: #555;
+  font-size: 1.1em;
+  line-height: 1.8;
+  max-width: 600px;
+  margin-bottom: 35px;
+}
+
+.discoveryBtn {
+  display: inline-block;
+  padding: 16px 45px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-size: 0.9em;
+  border-radius: 0; /* Строгие прямые углы */
+  transition: all 0.3s ease;
+  border: 1px solid #1a1a1a;
+}
+
+.discoveryBtn:hover {
+  background-color: transparent;
+  color: #1a1a1a;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .discoveryBanner {
+    padding: 40px 20px;
+  }
+  .discoveryTitle {
+    font-size: 1.8em;
+  }
 }

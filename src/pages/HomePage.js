@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom'; 
 import HeroSection from '../components/HeroSection';
 import SignatureScents from '../components/SignatureScents';
 import styles from './styles/HomePage.module.css';
@@ -8,7 +8,6 @@ function HomePage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Получаем поисковый запрос из URL (если он был введен в Хедере)
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const keyword = searchParams.get('keyword') || '';
@@ -16,23 +15,38 @@ function HomePage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // Формируем URL
       let url = 'http://localhost:5000/api/products';
       if (keyword) {
         url += `?keyword=${keyword}`;
       }
 
       const response = await fetch(url);
+      
+      // 1. Проверяем статус ответа
+      if (!response.ok) {
+        console.error("Ошибка сервера:", response.status);
+        setProducts([]); // Ставим пустой список, чтобы сайт не падал
+        return;
+      }
+
       const data = await response.json();
-      setProducts(data);
+      
+      // 2. Проверяем, что data - это массив, прежде чем фильтровать
+      if (Array.isArray(data)) {
+        const filteredData = data.filter(p => p.name !== 'Discovery Set');
+        setProducts(filteredData);
+      } else {
+        console.error("Сервер вернул не массив:", data);
+        setProducts([]);
+      }
+
     } catch (err) {
-      console.error("Ошибка при загрузке товаров:", err);
+      console.error("Ошибка сети:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Перезагружаем товары, когда меняется поиск
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line
@@ -40,12 +54,24 @@ function HomePage() {
 
   return (
     <>
-      {/* Баннер показываем только если не идет поиск */}
       {!keyword && <HeroSection />}
       
       <div className={styles.container}>
         
-        {/* Заголовок результатов поиска */}
+        {!keyword && (
+          <div className={styles.discoveryBanner}>
+            <h2 className={styles.discoveryTitle}>
+              Создай Свой Уникальный Сет
+            </h2>
+            <p className={styles.discoveryText}>
+              Выберите 5 ароматов, которые вас вдохновляют, и соберите персональную коллекцию миниатюр для знакомства с брендом.
+            </p>
+            <Link to="/discovery-set" className={styles.discoveryBtn}>
+              СОБРАТЬ СЕТ
+            </Link>
+          </div>
+        )}
+
         {keyword && (
            <h2 className={styles.searchTitle}>
              Результаты поиска: "{keyword}"
@@ -53,12 +79,12 @@ function HomePage() {
         )}
 
         {loading ? (
-           <div className={styles.message}>Загрузка...</div>
+           <div style={{ textAlign: 'center', padding: '50px', color: '#888' }}>Загрузка...</div>
         ) : products.length > 0 ? (
            <SignatureScents products={products} />
         ) : (
-           <div className={styles.message}>
-             Ничего не найдено.
+           <div style={{ textAlign: 'center', padding: '50px', color: '#777' }}>
+             Товары не найдены.
            </div>
         )}
       </div>

@@ -9,7 +9,7 @@ const Rating = ({ value, text }) => {
   return (
     <div className={styles.rating}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <span key={star} style={{ color: star <= value ? '#f8e825' : '#ccc' }}>
+        <span key={star} style={{ color: star <= value ? '#333' : '#ccc' }}>
           ★
         </span>
       ))}
@@ -30,6 +30,7 @@ function ProductDetailsPage() {
   // Стейт для формы отзыва
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   const fetchProductDetails = async () => {
       try {
@@ -100,6 +101,7 @@ function ProductDetailsPage() {
         return;
     }
 
+    setReviewLoading(true);
     try {
         const response = await fetch(`http://localhost:5000/api/products/${product._id}/reviews`, {
             method: 'POST',
@@ -116,18 +118,20 @@ function ProductDetailsPage() {
             showToast('Отзыв успешно добавлен!', 'success');
             setRating(5);
             setComment('');
-            fetchProductDetails(); // Обновляем данные
+            fetchProductDetails(); 
         } else {
             showToast(data.message, 'error');
         }
     } catch (error) {
         showToast('Ошибка отправки отзыва', 'error');
+    } finally {
+        setReviewLoading(false);
     }
   };
 
 
   if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>Загрузка...</div>;
-  if (!product || !selectedVariant) return <div>Продукт не найден</div>;
+  if (!product || !selectedVariant) return <div style={{ textAlign: 'center', padding: '100px' }}>Продукт не найден</div>;
 
   return (
     <div className={styles.pageWrapper}>
@@ -139,7 +143,6 @@ function ProductDetailsPage() {
         <div className={styles.details}>
           <h1 className={styles.title}>{product.name}</h1>
           
-          {/* Рейтинг товара */}
           <div style={{marginBottom: '20px'}}>
              <Rating value={product.rating} text={`${product.numReviews} отзывов`} />
           </div>
@@ -167,28 +170,52 @@ function ProductDetailsPage() {
           <button className={styles.addToCartButton} onClick={handleAddToCart} disabled={isOutOfStock}>
             Добавить в корзину
           </button>
+          
+          {/* ❗️ НОВЫЙ СТИЛЬНЫЙ БЛОК ДОВЕРИЯ (ИСПРАВЛЕН) */}
+          <div className={styles.trustBadges}>
+             
+             {/* Бейдж 1: Оригинал */}
+             <div className={styles.badge}>
+               <span className={styles.badgeIcon}>💎</span>
+               <div className={styles.badgeText}>
+                 <span className={styles.badgeTitle}>100% Оригинал</span>
+                 <span className={styles.badgeSubtitle}>Гарантия подлинности</span>
+               </div>
+             </div>
+
+             {/* Бейдж 2: Ручной распив */}
+             <div className={styles.badge}>
+               <span className={styles.badgeIcon}>✨</span>
+               <div className={styles.badgeText}>
+                 <span className={styles.badgeTitle}>Ручной Распив</span>
+                 <span className={styles.badgeSubtitle}>Сделано с любовью</span>
+               </div>
+             </div>
+
+          </div>
+
         </div>
       </div>
 
       {/* --- СЕКЦИЯ ОТЗЫВОВ --- */}
       <div className={styles.reviewsContainer}>
-        <h2>Отзывы ({product.reviews.length})</h2>
+        <h2>Отзывы ({product.numReviews})</h2>
         
         <div className={styles.reviewsContent}>
-            {/* Список отзывов */}
             <div className={styles.reviewList}>
-                {product.reviews.length === 0 && <p>Нет отзывов. Будьте первым!</p>}
-                {product.reviews.map(review => (
-                    <div key={review._id} className={styles.reviewItem}>
-                        <strong>{review.name}</strong>
-                        <Rating value={review.rating} />
-                        <p className={styles.reviewDate}>{review.createdAt.substring(0, 10)}</p>
-                        <p>{review.comment}</p>
+                {product.reviews.length === 0 && <p style={{fontStyle: 'italic', color: '#777'}}>Нет отзывов. Будьте первым!</p>}
+                {product.reviews.map((review, index) => (
+                    <div key={review._id || index} className={styles.reviewItem}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                          <strong>{review.name}</strong>
+                          <Rating value={review.rating} />
+                        </div>
+                        <p className={styles.reviewDate}>{new Date(review.createdAt).toLocaleDateString()}</p>
+                        <p style={{marginTop: '10px', lineHeight: '1.5'}}>{review.comment}</p>
                     </div>
                 ))}
             </div>
 
-            {/* Форма отзыва */}
             <div className={styles.reviewForm}>
                 <h3>Написать отзыв</h3>
                 {localStorage.getItem('authToken') ? (
@@ -196,26 +223,31 @@ function ProductDetailsPage() {
                         <div className={styles.formGroup}>
                             <label>Оценка</label>
                             <select value={rating} onChange={(e) => setRating(e.target.value)}>
-                                <option value="1">1 - Плохо</option>
-                                <option value="2">2 - Так себе</option>
-                                <option value="3">3 - Нормально</option>
-                                <option value="4">4 - Хорошо</option>
                                 <option value="5">5 - Отлично</option>
+                                <option value="4">4 - Хорошо</option>
+                                <option value="3">3 - Нормально</option>
+                                <option value="2">2 - Так себе</option>
+                                <option value="1">1 - Плохо</option>
                             </select>
                         </div>
                         <div className={styles.formGroup}>
                             <label>Комментарий</label>
                             <textarea 
-                                rows="3" 
+                                rows="4" 
                                 value={comment} 
                                 onChange={(e) => setComment(e.target.value)}
                                 required
+                                placeholder="Поделитесь своими впечатлениями..."
                             ></textarea>
                         </div>
-                        <button type="submit" className={styles.submitReviewBtn}>Отправить</button>
+                        <button type="submit" className={styles.submitReviewBtn} disabled={reviewLoading}>
+                            {reviewLoading ? 'Отправка...' : 'Отправить отзыв'}
+                        </button>
                     </form>
                 ) : (
-                    <p>Пожалуйста <Link to="/auth" style={{textDecoration: 'underline'}}>войдите</Link>, чтобы оставить отзыв.</p>
+                    <div style={{padding: '20px', background: '#f9f9f9', borderRadius: '4px'}}>
+                       Пожалуйста <Link to="/auth" style={{textDecoration: 'underline', fontWeight: 'bold', color: '#333'}}>войдите</Link>, чтобы оставить отзыв.
+                    </div>
                 )}
             </div>
         </div>
