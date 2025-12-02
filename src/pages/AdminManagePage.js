@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-// Мы используем стили для заказов (убедитесь, что файл src/pages/styles/AdminOrdersPage.module.css существует)
-import styles from './styles/AdminOrdersPage.module.css'; 
+import { useNavigate} from 'react-router-dom';
+import styles from './styles/AdminOrdersPage.module.css';
 import { useToast } from '../context/ToastContext';
 
-const STATUS_OPTIONS = ['Оплачено', 'В работе', 'Отправлено', 'Доставлено', 'Отменено'];
+const STATUS_OPTIONS = ['Paid', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
 
 function AdminManagePage() {
   const [orders, setOrders] = useState([]);
@@ -14,7 +13,7 @@ function AdminManagePage() {
 
   const handleAuthError = useCallback((response) => {
     if (response.status === 401 || response.status === 403) {
-      showToast('Сессия истекла. Войдите заново.', 'error');
+      showToast('Session expired. Please log in again.', 'error');
       localStorage.removeItem('authToken');
       localStorage.removeItem('isAdmin');
       navigate('/auth');
@@ -31,18 +30,17 @@ function AdminManagePage() {
          navigate('/auth');
          return;
       }
-      // ❗️ ЗАПРОС ЗАКАЗОВ
       const response = await fetch('http://localhost:5000/api/orders', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
       if (handleAuthError(response)) return;
-      if (!response.ok) throw new Error('Ошибка загрузки');
+      if (!response.ok) throw new Error('Loading error');
       
       const data = await response.json();
       setOrders(data);
     } catch (err) {
-      showToast('Не удалось загрузить заказы', 'error');
+      showToast('Failed to load orders', 'error');
     } finally {
       setLoading(false);
     }
@@ -66,27 +64,28 @@ function AdminManagePage() {
 
       if (handleAuthError(response)) return;
       if (response.ok) {
-        showToast('Статус обновлен!', 'success');
+        showToast('Status updated!', 'success');
+        // Update local state to show the change immediately
         setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
       }
     } catch (err) {
-      showToast('Ошибка обновления', 'error');
+      showToast('Update error', 'error');
     }
   };
 
-  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Загрузка заказов...</div>;
+  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Loading orders...</div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>Управление Заказами</h1>
+      <h1 className={styles.header}>Order Management</h1>
       <div className={styles.orderList}>
-        {orders.length === 0 && <p>Заказов пока нет.</p>}
+        {orders.length === 0 && <p>No orders found.</p>}
         {orders.map(order => (
           <div key={order._id} className={styles.orderCard}>
             <div className={styles.orderHeader}>
               <div className={styles.orderHeaderInfo}>
-                <p><strong>Заказ #{order._id.slice(-6)}</strong></p>
-                <p>Сумма: <strong>£{order.totalPrice.toFixed(2)}</strong></p>
+                <p><strong>Order #{order._id.slice(-6)}</strong></p>
+                <p>Total: <strong>&pound;{order.totalPrice.toFixed(2)}</strong></p>
               </div>
               <select 
                 value={order.status}
@@ -97,25 +96,25 @@ function AdminManagePage() {
               </select>
             </div>
             <div className={styles.orderBody}>
-               {/* Здесь список товаров внутри заказа */}
-               <div className={styles.itemsList}>
-                 {order.orderItems.map(item => (
-                   <div key={item._id} className={styles.item}>
-                      <img src={item.image} alt="" className={styles.itemImage}/>
-                      <div className={styles.itemInfo}>
-                        <p className={styles.itemName}>{item.name} ({item.size}ml)</p>
-                        <p>x{item.quantity} — £{item.price}</p>
-                      </div>
-                   </div>
-                 ))}
-               </div>
-               <div className={styles.shippingInfo}>
-                 <h4>Доставка:</h4>
-                 <p className={styles.shippingAddress}>
-                   {order.shippingInfo.name}<br/>
-                   {order.shippingInfo.address}, {order.shippingInfo.city}
-                 </p>
-               </div>
+                <div className={styles.itemsList}>
+                  {order.orderItems.map(item => (
+                    <div key={item._id} className={styles.item}>
+                       <img src={item.image} alt={item.name} className={styles.itemImage}/>
+                       <div className={styles.itemInfo}>
+                         <p className={styles.itemName}>{item.name} ({item.size}ml)</p>
+                         <p>x{item.quantity} — &pound;{item.price}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.shippingInfo}>
+                  <h4>Shipping:</h4>
+                  <p className={styles.shippingAddress}>
+                    {order.shippingInfo.name}<br/>
+                    {order.shippingInfo.email}<br/>
+                    {order.shippingInfo.addressLine1}, {order.shippingInfo.city}, {order.shippingInfo.postcode}
+                  </p>
+                </div>
             </div>
           </div>
         ))}

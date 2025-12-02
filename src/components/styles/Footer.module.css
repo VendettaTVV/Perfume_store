@@ -1,14 +1,13 @@
 .footer {
-  background-color: #1a1a1a; /* Темный, дорогой цвет */
+  background-color: #1a1a1a; 
   color: #ffffff;
   padding: 80px 40px 30px;
   font-family: 'Segoe UI', sans-serif;
-  margin-top: auto; /* Прижимает футер к низу, если контента мало */
+  margin-top: auto; 
 }
 
 .topSection {
   display: grid;
-  /* 4 колонки: Бренд (пошире) | Меню | Помощь | Соцсети */
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 40px;
   margin-bottom: 60px;
@@ -17,7 +16,6 @@
   margin-right: auto;
 }
 
-/* --- Колонка Бренда --- */
 .brandColumn {
   display: flex;
   flex-direction: column;
@@ -36,11 +34,10 @@
 .footerText {
   font-size: 0.9em;
   line-height: 1.6;
-  color: #ccc; /* Чуть приглушенный текст */
+  color: #ccc; 
   max-width: 300px;
 }
 
-/* --- Колонки Ссылок --- */
 .linksColumn {
   display: flex;
   flex-direction: column;
@@ -65,10 +62,9 @@
 
 .link:hover {
   color: #fff;
-  transform: translateX(5px); /* Легкий сдвиг при наведении */
+  transform: translateX(5px); 
 }
 
-/* --- Соцсети --- */
 .socialColumn h4 {
   font-family: 'Playfair Display', serif;
   font-size: 1.1em;
@@ -99,7 +95,6 @@
   border-color: #fff;
 }
 
-/* --- Нижняя часть (Копирайт) --- */
 .bottomSection {
   border-top: 1px solid #333;
   padding-top: 30px;
@@ -112,10 +107,10 @@
   letter-spacing: 1px;
 }
 
-/* Адаптивность */
+
 @media (max-width: 900px) {
   .topSection {
-    grid-template-columns: 1fr 1fr; /* 2 колонки на планшетах */
+    grid-template-columns: 1fr 1fr;
     gap: 40px;
   }
 }
@@ -126,7 +121,7 @@
   }
   
   .topSection {
-    grid-template-columns: 1fr; /* 1 колонка на телефонах */
+    grid-template-columns: 1fr; 
     text-align: center;
     gap: 50px;
   }

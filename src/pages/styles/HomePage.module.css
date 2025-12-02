@@ -1,7 +1,7 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px; /* Убрали вертикальные отступы у контейнера */
+  padding: 0 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -9,7 +9,7 @@
   text-align: center;
   margin-top: 40px;
   font-family: 'Playfair Display', serif;
-  color: #333;
+  color: #1a1a1a;
   font-size: 2em;
 }
 
@@ -21,24 +21,99 @@
   font-style: italic;
 }
 
-/* --- СТИЛИ ДЛЯ БАННЕРА DISCOVERY SET (Обновленные) --- */
-.discoveryBanner {
+.filterBar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.genderTabs {
+  display: flex;
+  gap: 25px;
+}
+
+.genderBtn {
+  background: none;
+  border: none;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1em;
+  color: #888;
+  cursor: pointer;
+  padding-bottom: 5px;
+  transition: color 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  position: relative;
+}
+
+.genderBtn:hover {
+  color: #1a1a1a;
+}
+
+.genderBtn.active {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.genderBtn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1a1a1a;
+}
+
+.sortWrapper {
+  position: relative;
+}
+
+.sortSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  
+  padding: 10px 40px 10px 20px;
+  
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #333;
+  
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+}
+
+.sortSelect:hover {
+  border-color: #aaa;
+  background-color: #fafafa;
+}
+
+.sortSelect:focus {
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+}
+
+.discoveryBanner {
   text-align: center;
-  
-  /* ❗️ УБРАЛИ лишние отступы и рамки */
-  padding: 10px 20px 20px; /* Сверху отступ от хедера/баннера, снизу меньше */
-  margin: 0 auto; /* Убрали внешние отступы */
+  padding: 0px 20px;
+  margin: 10px auto 40px;
   max-width: 800px;
-  
-  /* ❗️ Делаем блок прозрачным и бесшовным */
   background-color: transparent;
   border: none;
-  box-shadow: none;
-  border-radius: 0;
 }
 
 .discoveryTitle {
@@ -48,7 +123,7 @@
   color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: 2px;
-  font-weight: 400; /* Тонкий шрифт выглядит премиально */
+  font-weight: 400;
 }
 
 .discoveryText {
@@ -57,12 +132,12 @@
   font-size: 1.1em;
   line-height: 1.8;
   max-width: 600px;
-  margin-bottom: 35px;
+  margin: 0 auto 20px;
 }
 
 .discoveryBtn {
   display: inline-block;
-  padding: 16px 45px;
+  padding: 10px 35px;
   background-color: #1a1a1a;
   color: #ffffff;
   text-decoration: none;
@@ -70,7 +145,7 @@
   font-weight: 600;
   letter-spacing: 2px;
   font-size: 0.9em;
-  border-radius: 0; /* Строгие прямые углы */
+  border-radius: 0;
   transition: all 0.3s ease;
   border: 1px solid #1a1a1a;
 }
@@ -80,11 +155,23 @@
   color: #1a1a1a;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
-  .discoveryBanner {
-    padding: 40px 20px;
+  .filterBar {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
   }
+  
+  .genderTabs {
+    width: 100%;
+    justify-content: space-between;
+    overflow-x: auto;
+  }
+  
+  .sortWrapper, .sortSelect {
+    width: 100%;
+  }
+
   .discoveryTitle {
     font-size: 1.8em;
   }

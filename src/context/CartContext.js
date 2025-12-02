@@ -4,32 +4,26 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
-// --- 1. Функция для ЗАГРУЗКИ корзины из localStorage ---
 const getInitialCart = () => {
   try {
     const savedCart = localStorage.getItem('perfumeCart');
-    // Если корзина есть, парсим ее. Если нет - возвращаем пустой массив.
     return savedCart ? JSON.parse(savedCart) : [];
   } catch (error) {
-    console.error("Не удалось загрузить корзину из localStorage", error);
+    console.error("Failed to load cart from localStorage", error);
     return [];
   }
 };
 
 export const CartProvider = ({ children }) => {
-  // --- 2. Инициализируем стейт С ПОМОЩЬЮ ФУНКЦИИ ---
   const [cartItems, setCartItems] = useState(getInitialCart);
 
-  // --- 3. useEffect для СОХРАНЕНИЯ корзины ---
   useEffect(() => {
     try {
       localStorage.setItem('perfumeCart', JSON.stringify(cartItems));
     } catch (error) {
-      console.error("Не удалось сохранить корзину в localStorage", error);
+      console.error("Failed to save cart to localStorage", error);
     }
-  }, [cartItems]); // Зависимость - cartItems
-
-  // --- 4. Функции управления корзиной ---
+  }, [cartItems]);
 
   const addToCart = (product) => {
     setCartItems(prevItems => {
@@ -49,25 +43,20 @@ export const CartProvider = ({ children }) => {
     setCartItems(prevItems => prevItems.filter(item => item.cartItemId !== cartItemId));
   };
 
-  // ❗️ 👇 НОВАЯ ФУНКЦИЯ ОЧИСТКИ КОРЗИНЫ
   const clearCart = () => {
     setCartItems([]);
   };
 
-  // --- 5. Подсчеты ---
-
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-  // --- 6. Провайдер ---
 
   return (
     <CartContext.Provider value={{ 
       cartItems, 
       addToCart, 
       removeFromCart,
-      clearCart, // ❗️ 👈 ДОБАВИЛИ clearCart В КОНТЕКСТ
+      clearCart,
       total,
       totalQuantity
     }}>

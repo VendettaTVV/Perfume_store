@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from './styles/Auth.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
-import { useAuth } from '../../context/AuthContext'; // 1. Импорт
+import { useAuth } from '../../context/AuthContext';
 
 function LoginForm({ onSuccess, onForgotPasswordClick }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -11,7 +11,7 @@ function LoginForm({ onSuccess, onForgotPasswordClick }) {
   
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { login } = useAuth(); // 2. Достаем функцию login
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,18 +33,17 @@ function LoginForm({ onSuccess, onForgotPasswordClick }) {
       const data = await response.json();
 
       if (response.ok) {
-        // 3. Используем login из контекста (он сам сохранит в localStorage)
         login(data.token, data.user);
         
         if (onSuccess) onSuccess(data.user);
-        showToast('Вход выполнен успешно!', 'success');
+        showToast('Login successful!', 'success');
         navigate('/');
       } else {
-        setError(data.message || 'Неверный email или пароль.');
+        setError(data.message || 'Invalid email or password.');
       }
     } catch (err) {
       console.error(err);
-      setError('Ошибка сети. Проверьте ваше подключение.');
+      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -52,20 +51,20 @@ function LoginForm({ onSuccess, onForgotPasswordClick }) {
 
   return (
     <div className={styles.container}>
-      <h2>Вход в Аккаунт</h2>
+      <h2>Log In</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         {error && <p className={styles.error}>{error}</p>}
         <label htmlFor="email">Email:</label>
         <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
-        <label htmlFor="password">Пароль:</label>
+        <label htmlFor="password">Password:</label>
         <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
         <button type="submit" disabled={loading}>
-          {loading ? 'Вход...' : 'Войти'}
+          {loading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
       {onForgotPasswordClick && (
         <button onClick={onForgotPasswordClick} className={styles.backButton}>
-          Забыли пароль?
+          Forgot password?
         </button>
       )}
     </div>

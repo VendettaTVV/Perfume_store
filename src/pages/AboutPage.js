@@ -21,7 +21,7 @@ function AboutPage() {
           </p>
           <p className={styles.text}>
             We believe that perfume is an invisible accessory that says more about you than words. 
-            Founded in 2023, AROMATICUS was born from a single aim: to create fragrances that tell stories. 
+            Founded in 2024, AROMATICUS was born from a single aim: to create fragrances that tell stories. 
             Not just scents, but olfactory journeys.
           </p>
         </div>

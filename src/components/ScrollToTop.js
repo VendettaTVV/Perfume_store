@@ -5,11 +5,10 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Прокручиваем в самый верх (0, 0)
     window.scrollTo(0, 0);
-  }, [pathname]); // Срабатывает при каждом изменении пути
+  }, [pathname]);
 
-  return null; // Этот компонент ничего не рендерит визуально
+  return null;
 }
 
 export default ScrollToTop;

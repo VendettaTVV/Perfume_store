@@ -8,17 +8,16 @@ function SuccessPage() {
   const { showToast } = useToast();
 
   useEffect(() => {
-    // Мы просто очищаем корзину клиента, так как заказ уже обработан вебхуком
     clearCart();
-    showToast('Заказ успешно оплачен!', 'success');
+    showToast('Order successfully paid!', 'success');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
   return (
     <div style={{ textAlign: 'center', padding: '50px', fontFamily: 'Times New Roman, serif' }}>
-      <h1 style={{ color: '#27ae60', fontSize: '2.5em' }}>Оплата прошла успешно! 🎉</h1>
+      <h1 style={{ color: '#27ae60', fontSize: '2.5em' }}>Payment Successful! 🎉</h1>
       <p style={{ fontSize: '1.2em', color: '#333' }}>
-        Спасибо за ваш заказ. Мы скоро свяжемся с вами.
+        Thank you for your order. We will be in touch shortly regarding delivery.
       </p>
       <Link 
         to="/" 
@@ -34,7 +33,7 @@ function SuccessPage() {
           textTransform: 'uppercase'
         }}
       >
-        Вернуться в магазин
+        Continue Shopping
       </Link>
     </div>
   );

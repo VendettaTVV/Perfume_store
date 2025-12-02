@@ -8,35 +8,48 @@ function CheckoutPage() {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [shippingCost, setShippingCost] = useState(0); 
+  
+  const [shippingCost, setShippingCost] = useState(null); 
 
-  // Состояния для Купона
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const [shippingInfo, setShippingInfo] = useState({
     name: '', email: '', addressLine1: '', addressLine2: '', city: '', postcode: '', country: 'United Kingdom'
   });
-  
-  // Мы убрали стейт выбора метода, теперь он всегда 'standard'
+
+  const discountAmount = appliedCoupon ? (total * appliedCoupon.percent / 100) : 0;
+  const totalAfterDiscount = total - discountAmount;
 
   const calculateShipping = useCallback(async (postcode) => {
-    if (!postcode || postcode.length < 2) { setShippingCost(0); return; }
+    if (!postcode || postcode.length < 2) { 
+        setShippingCost(null);
+        return; 
+    }
     setIsCalculating(true);
     try {
         const response = await fetch('http://localhost:5000/api/checkout/calculate-shipping', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // ❗️ Хардкодим метод 'standard'
-            body: JSON.stringify({ postcode, method: 'standard' }),
+            body: JSON.stringify({ 
+                postcode, 
+                method: 'standard',
+                cartTotal: totalAfterDiscount
+            }),
         });
+
         if (response.ok) {
             const data = await response.json();
             setShippingCost(data.price);
-        } else { setShippingCost(5.00); } // Дефолтная цена если ошибка
-    } catch (error) { setShippingCost(5.00); } 
-    finally { setIsCalculating(false); }
-  }, []);
+        } else { 
+            setShippingCost(5.00); // Fallback
+        }
+    } catch (error) { 
+        setShippingCost(5.00); // Fallback
+    } finally { 
+        setIsCalculating(false); 
+    }
+  }, [totalAfterDiscount]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -62,28 +75,27 @@ function CheckoutPage() {
       
       if (response.ok && data.isValid) {
         setAppliedCoupon({ code: data.code, percent: data.discountPercent });
-        showToast(`Купон ${data.code} применен!`, 'success');
+        showToast(`Coupon ${data.code} applied!`, 'success');
       } else {
         setAppliedCoupon(null);
-        showToast(data.message || 'Неверный купон', 'error');
+        showToast(data.message || 'Invalid coupon code', 'error');
       }
     } catch (err) {
-      showToast('Ошибка проверки купона', 'error');
+      showToast('Error validating coupon', 'error');
     }
   };
 
-  const discountAmount = appliedCoupon ? (total * appliedCoupon.percent / 100) : 0;
-  const totalAfterDiscount = total - discountAmount;
-  const finalTotal = totalAfterDiscount + shippingCost;
+  const displayShipping = shippingCost === null ? 0 : shippingCost;
+  const finalTotal = totalAfterDiscount + displayShipping;
 
   const handlePayment = async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Проверка: цена доставки должна быть рассчитана
-    if (shippingCost === 0 && shippingInfo.postcode.length >= 2) {
-      showToast("Пожалуйста, дождитесь расчета стоимости доставки.", 'error');
-      setLoading(false); return;
+    if (shippingCost === null && shippingInfo.postcode.length >= 2) {
+      showToast("Please wait for shipping costs to be calculated.", 'error');
+      setLoading(false); 
+      return;
     }
     
     const userId = localStorage.getItem('userId');
@@ -95,18 +107,24 @@ function CheckoutPage() {
         body: JSON.stringify({ 
           cartItems, 
           shippingInfo, 
-          shippingMethod: 'standard', // ❗️ Хардкодим метод
+          shippingMethod: 'standard',
           userId,
           couponCode: appliedCoupon ? appliedCoupon.code : null
         }),
       });
+      
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Ошибка на сервере');
+        throw new Error(errorData.message || 'Server Error');
       }
+      
       const session = await response.json();
-      if (session.url) window.location.href = session.url;
-      else throw new Error('Не удалось получить ссылку на оплату');
+      if (session.url) {
+          window.location.href = session.url;
+      } else {
+          throw new Error('Failed to retrieve payment link');
+      }
+
     } catch (error) {
       console.error(error);
       showToast(error.message, 'error');
@@ -114,42 +132,40 @@ function CheckoutPage() {
     }
   };
 
-  if (cartItems.length === 0) return <div className={styles.container}><h2>Ваша корзина пуста</h2></div>;
+  if (cartItems.length === 0) return <div className={styles.container}><h2>Your basket is empty</h2></div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Оформление Заказа</h1>
+      <h1 className={styles.title}>Checkout</h1>
       
       <div className={styles.formColumn}>
         <form id="checkout-form" onSubmit={handlePayment} className={styles.form}>
-           <h2>Адрес Доставки (United Kingdom)</h2>
-           <div className={styles.inputGroup}>
-            <label>ФИО Получателя</label><input type="text" name="name" value={shippingInfo.name} onChange={handleChange} required />
-           </div>
-           <div className={styles.inputGroup}>
-            <label>Email</label><input type="email" name="email" value={shippingInfo.email} onChange={handleChange} required />
-           </div>
-           <div className={styles.inputGroup}>
-            <label>Адрес 1</label><input type="text" name="addressLine1" value={shippingInfo.addressLine1} onChange={handleChange} required />
-           </div>
-           <div className={styles.inputGroup}>
-            <label>Адрес 2</label><input type="text" name="addressLine2" value={shippingInfo.addressLine2} onChange={handleChange} />
-           </div>
-           <div className={styles.row}>
+            <h2>Delivery Address (United Kingdom)</h2>
             <div className={styles.inputGroup}>
-              <label>Город</label><input type="text" name="city" value={shippingInfo.city} onChange={handleChange} required />
+             <label>Full Name</label><input type="text" name="name" value={shippingInfo.name} onChange={handleChange} required />
             </div>
             <div className={styles.inputGroup}>
-              <label>Почтовый Индекс</label><input type="text" name="postcode" value={shippingInfo.postcode} onChange={handleChange} required />
+             <label>Email</label><input type="email" name="email" value={shippingInfo.email} onChange={handleChange} required />
             </div>
-           </div>
-           
-           {/* ❗️ Блок выбора доставки удален, так как она рассчитывается автоматически */}
+            <div className={styles.inputGroup}>
+             <label>Address Line 1</label><input type="text" name="addressLine1" value={shippingInfo.addressLine1} onChange={handleChange} required />
+            </div>
+            <div className={styles.inputGroup}>
+             <label>Address Line 2 (Optional)</label><input type="text" name="addressLine2" value={shippingInfo.addressLine2} onChange={handleChange} />
+            </div>
+            <div className={styles.row}>
+             <div className={styles.inputGroup}>
+               <label>City / Town</label><input type="text" name="city" value={shippingInfo.city} onChange={handleChange} required />
+             </div>
+             <div className={styles.inputGroup}>
+               <label>Postcode</label><input type="text" name="postcode" value={shippingInfo.postcode} onChange={handleChange} required placeholder="e.g. CT6 8AP"/>
+             </div>
+            </div>
         </form>
       </div>
 
       <div className={styles.summaryColumn}>
-        <h2>Ваш Заказ</h2>
+        <h2>Your Order Summary</h2>
         <div className={styles.summaryItems}>
           {cartItems.map(item => (
             <div key={item.cartItemId} className={styles.summaryItem}>
@@ -160,62 +176,73 @@ function CheckoutPage() {
         </div>
         
         <div className={styles.couponSection}>
-          <label className={styles.couponLabel}>Промокод</label>
+          <label className={styles.couponLabel}>Promo Code</label>
           <div className={styles.couponForm}>
             <input 
               type="text" 
-              placeholder="Введите код" 
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              className={styles.couponInput}
+              placeholder="Enter code" 
+              value={couponCode} 
+              onChange={(e) => setCouponCode(e.target.value)} 
+              className={styles.couponInput} 
               disabled={!!appliedCoupon} 
             />
             {appliedCoupon ? (
-               <button type="button" onClick={() => {setAppliedCoupon(null); setCouponCode('');}} className={styles.couponRemoveBtn}>
-                 Отмена
-               </button>
+              <button 
+                type="button" 
+                onClick={() => {setAppliedCoupon(null); setCouponCode('');}} 
+                className={styles.couponRemoveBtn}
+              >
+                ✕
+              </button>
             ) : (
-               <button type="button" onClick={handleApplyCoupon} className={styles.couponBtn}>
-                 OK
-               </button>
+              <button 
+                type="button" 
+                onClick={handleApplyCoupon} 
+                className={styles.couponBtn}
+              >
+                Apply
+              </button>
             )}
           </div>
-          {appliedCoupon && <p className={styles.couponSuccess}>✓ Скидка {appliedCoupon.percent}% применена</p>}
+          {appliedCoupon && <p className={styles.couponSuccess}>✓ {appliedCoupon.percent}% Discount Applied</p>}
         </div>
         
-        <div className={styles.summaryRow}>
-          <span>Товары:</span><span>£{total.toFixed(2)}</span>
-        </div>
-        
-        {appliedCoupon && (
-          <div className={`${styles.summaryRow} ${styles.discountRow}`}>
-            <span>Скидка:</span><span>-£{discountAmount.toFixed(2)}</span>
+        <div className={styles.totalsSection}>
+          <div className={styles.summaryRow}>
+            <span>Subtotal:</span><span>£{total.toFixed(2)}</span>
           </div>
-        )}
-
-        <div className={styles.summaryRow}>
-          <span>Доставка:</span>
-          <span>
-            {isCalculating 
-              ? '...' 
-              : shippingCost === 0 && shippingInfo.postcode.length < 2
-                ? 'Введите индекс'
-                : `£${shippingCost.toFixed(2)}`
-            }
-          </span>
-        </div>
-        
-        <div className={styles.summaryTotal}>
-          <span>Итого:</span><span>£{finalTotal.toFixed(2)}</span>
+          {appliedCoupon && (
+            <div className={`${styles.summaryRow} ${styles.discountRow}`}>
+              <span>Discount ({appliedCoupon.percent}%):</span><span>-£{discountAmount.toFixed(2)}</span>
+            </div>
+          )}
+          
+          <div className={styles.summaryRow}>
+            <span>Delivery:</span>
+            <span>
+              {isCalculating 
+                ? '...' 
+                : shippingCost === null 
+                  ? '—' // Not yet calculated
+                  : shippingCost === 0 
+                    ? <span style={{color: '#27ae60', fontWeight: 'bold'}}>FREE</span> 
+                    : `£${shippingCost.toFixed(2)}`
+              }
+            </span>
+          </div>
+          
+          <div className={styles.summaryTotal}>
+            <span>Order Total:</span><span>£{finalTotal.toFixed(2)}</span>
+          </div>
         </div>
 
         <button 
           type="submit" 
           form="checkout-form" 
           className={styles.payButton}
-          disabled={loading || isCalculating || (shippingCost === 0 && shippingInfo.postcode.length > 1)}
+          disabled={loading || isCalculating || shippingCost === null}
         >
-          {loading ? 'Обработка...' : 'ОПЛАТИТЬ ЗАКАЗ'}
+          {loading ? 'Processing...' : 'PAY FOR ORDER'}
         </button>
       </div>
     </div>

@@ -11,7 +11,6 @@ function DiscoverySetPage() {
   const [baseSetProduct, setBaseSetProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Состояние для 5 слотов (выбранные ароматы)
   const [selections, setSelections] = useState([
     '', '', '', '', ''
   ]);
@@ -22,10 +21,7 @@ function DiscoverySetPage() {
         const response = await fetch('http://localhost:5000/api/products');
         const data = await response.json();
         
-        // 1. Находим сам товар "Discovery Set" (по названию) для цены и картинки
         const setProduct = data.find(p => p.name === 'Discovery Set');
-        
-        // 2. Остальные товары - это то, что можно выбрать
         const availableScents = data.filter(p => p.name !== 'Discovery Set' && !p.isHidden);
 
         if (setProduct) {
@@ -35,7 +31,7 @@ function DiscoverySetPage() {
         
       } catch (error) {
         console.error(error);
-        showToast('Ошибка загрузки данных', 'error');
+        showToast('Error loading product data', 'error');
       } finally {
         setLoading(false);
       }
@@ -51,31 +47,26 @@ function DiscoverySetPage() {
 
   const handleAddToCart = () => {
     if (!baseSetProduct) {
-        showToast('Товар "Discovery Set" не найден в базе!', 'error');
+        showToast('The "Discovery Set" product was not found in the database!', 'error');
         return;
     }
 
-    // Проверяем, все ли 5 слотов заполнены
     if (selections.some(s => s === '')) {
-      showToast('Пожалуйста, выберите все 5 ароматов.', 'error');
+      showToast('Please select all 5 scents.', 'error');
       return;
     }
 
-    // Формируем название
     const scentsList = selections.join(', ');
     const customName = `Discovery Set (${scentsList})`;
     
-    // Берем цену и картинку из базового товара
-    // (Предполагаем, что у него есть хотя бы один вариант, например 10ml)
     const variant = baseSetProduct.variants[0];
 
     if (!variant) {
-        showToast('У товара Discovery Set нет вариантов цены.', 'error');
+        showToast('The Discovery Set product has no price variants.', 'error');
         return;
     }
 
     const itemToAdd = {
-      // Уникальный ID для корзины
       cartItemId: `${baseSetProduct._id}-${Date.now()}`, 
       id: baseSetProduct._id,
       name: customName, 
@@ -86,22 +77,21 @@ function DiscoverySetPage() {
     };
 
     addToCart(itemToAdd);
-    showToast('Набор пробников добавлен в корзину!', 'success');
+    showToast('Discovery Set added to your basket!', 'success');
   };
 
-  if (loading) return <div style={{textAlign: 'center', padding: 50}}>Загрузка...</div>;
+  if (loading) return <div style={{textAlign: 'center', padding: 50}}>Loading...</div>;
 
   if (!baseSetProduct) return (
     <div style={{textAlign: 'center', padding: 50}}>
-      <h2>Товар "Discovery Set" не найден.</h2>
-      <p>Пожалуйста, зайдите в админку и создайте товар с названием <b>Discovery Set</b>.</p>
+      <h2>"Discovery Set" product not found.</h2>
+      <p>Please create a product named **Discovery Set** in your admin panel.</p>
     </div>
   );
 
   return (
     <div className={styles.container}>
       <div className={styles.imageCol}>
-        {/* Показываем картинку базового товара */}
         <img 
           src={baseSetProduct.variants[0]?.image || 'https://via.placeholder.com/400'} 
           alt="Discovery Set" 
@@ -109,9 +99,9 @@ function DiscoverySetPage() {
       </div>
       
       <div className={styles.infoCol}>
-        <h1 className={styles.title}>Собери Свой Набор</h1>
+        <h1 className={styles.title}>Create Your Sample Set</h1>
         <p className={styles.subtitle}>
-          Выберите 5 ароматов (по 2 мл каждый), чтобы познакомиться с нашей коллекцией.
+          Select 5 scents (2ml each) to explore our collection.
         </p>
         
         <div className={styles.price}>
@@ -121,13 +111,13 @@ function DiscoverySetPage() {
         <div className={styles.selectors}>
           {selections.map((sel, index) => (
             <div key={index} className={styles.selectGroup}>
-              <label>Аромат #{index + 1}</label>
+              <label>Scent #{index + 1}</label>
               <select 
                 value={sel} 
                 onChange={(e) => handleSelectChange(index, e.target.value)}
                 className={styles.select}
               >
-                <option value="">-- Выберите аромат --</option>
+                <option value="">-- Select a scent --</option>
                 {allProducts.map(p => (
                   <option key={p._id} value={p.name}>{p.name}</option>
                 ))}
@@ -136,8 +126,12 @@ function DiscoverySetPage() {
           ))}
         </div>
 
-        <button className={styles.addBtn} onClick={handleAddToCart}>
-          Добавить набор в корзину
+        <button 
+          className={styles.addBtn} 
+          onClick={handleAddToCart}
+          disabled={selections.some(s => s === '')}
+        >
+          Add Set to Basket
         </button>
       </div>
     </div>

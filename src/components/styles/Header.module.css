@@ -24,7 +24,6 @@
   align-items: flex-start;
 }
 
-/* ❗️ Стильное Название (Playfair Display) */
 .brandName {
   font-family: 'Playfair Display', serif;
   font-size: 24px;
@@ -35,7 +34,6 @@
   line-height: 1;
 }
 
-/* ❗️ Стильный подзаголовок логотипа */
 .tagline {
   font-family: 'Segoe UI', sans-serif;
   font-size: 9px;
@@ -46,7 +44,6 @@
   text-transform: uppercase;
 }
 
-/* --- ЦЕНТРАЛЬНАЯ ЧАСТЬ (СЛОГАН) --- */
 .centerSection {
   flex: 2;
   display: flex;
@@ -55,10 +52,10 @@
   text-align: center;
 }
 
-/* ❗️ Красивый рукописный шрифт по центру */
+
 .slogan {
   font-family: 'Great Vibes', cursive; 
-  font-size: 2em; /* Крупно и красиво */
+  font-size: 2em; 
   margin: 0;
   color: #333;
   line-height: 1.2;
@@ -87,7 +84,7 @@
   font-weight: bold;
 }
 
-/* --- ПРАВАЯ ЧАСТЬ --- */
+
 .rightSection {
   flex: 1;
   display: flex;
@@ -96,7 +93,7 @@
   gap: 25px;
 }
 
-/* Поиск (Чистая капсула без кнопки) */
+
 .searchForm {
   display: flex;
   align-items: center;
@@ -113,13 +110,13 @@
   font-family: 'Segoe UI', sans-serif;
   outline: none;
   transition: all 0.3s ease;
-  text-align: center; /* Текст по центру */
+  text-align: center; 
 }
 
 .searchInput:focus {
   background-color: #fff;
   border-color: #e0e0e0;
-  width: 220px; /* Расширяется при фокусе */
+  width: 220px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   text-align: left;
 }
@@ -129,7 +126,6 @@
   font-style: italic;
 }
 
-/* Иконки и Текст */
 .icons {
   display: flex;
   align-items: center;

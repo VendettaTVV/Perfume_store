@@ -1,4 +1,3 @@
-/* src/pages/styles/AdminOrdersPage.module.css */
 
 .container {
   max-width: 1200px;
@@ -33,14 +32,14 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  overflow: hidden; /* Важно для дочерних элементов */
+  overflow: hidden;
 }
 
 .orderHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Для мобильных */
+  flex-wrap: wrap;
   gap: 10px;
   background: #f9f9f9;
   padding: 15px 20px;
@@ -78,10 +77,6 @@
   cursor: pointer;
   background-color: #fff;
 }
-
-/* Цветовая кодировка статусов (опционально) */
-/* .statusSelect option[value="Оплачено"] { color: green; } */
-
 
 .orderBody {
   display: grid;

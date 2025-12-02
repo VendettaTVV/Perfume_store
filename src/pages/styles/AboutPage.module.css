@@ -1,7 +1,7 @@
-/* Общий контейнер */
+
 .container {
   width: 100%;
-  background-color: #f9f9f9; /* Очень светлый серый фон */
+  background-color: #f9f9f9;
   color: #333;
   font-family: 'Times New Roman', Times, serif;
 }
@@ -9,7 +9,7 @@
 /* --- Hero Section --- */
 .hero {
   text-align: center;
-  padding: 80px 20px 80px; /* Увеличил отступ снизу, раз нет картинки */
+  padding: 80px 20px 80px;
   background-color: #fff;
 }
 
@@ -25,10 +25,8 @@
   font-size: 1.2em;
   font-style: italic;
   color: #666;
-  margin-bottom: 0; /* Убрал отступ снизу */
+  margin-bottom: 0;
 }
-
-/* ❗️ Стили .heroImageContainer и .heroImage отсюда УДАЛЕНЫ */
 
 /* --- Story Section --- */
 .storySection {
@@ -47,7 +45,6 @@
   display: inline-block;
 }
 
-/* Декоративная линия под заголовком */
 .sectionTitle::after {
   content: '';
   display: block;
@@ -66,7 +63,7 @@
 
 /* --- Philosophy Section --- */
 .philosophySection {
-  background-color: #fff; /* Белый фон для контраста */
+  background-color: #fff;
   padding: 80px 20px;
   text-align: center;
 }
@@ -94,7 +91,7 @@
 /* --- Founder / Quote Section --- */
 .founderSection {
   padding: 100px 20px;
-  background-color: #1a1a1a; /* Темный фон */
+  background-color: #1a1a1a;
   color: #fff;
   text-align: center;
 }
@@ -119,7 +116,6 @@
   opacity: 0.8;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .title {
     font-size: 2.5em;

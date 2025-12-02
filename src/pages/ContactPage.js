@@ -18,9 +18,8 @@ function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Здесь будет логика отправки на бэкенд в будущем
-    // Пока просто имитируем успешную отправку
-    showToast('Ваше сообщение отправлено! Мы свяжемся с вами.', 'success');
+    // Future backend submission logic goes here
+    showToast('Your message has been sent! We will be in touch shortly.', 'success');
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
@@ -28,39 +27,39 @@ function ContactPage() {
     <div className={styles.container}>
       
       <div className={styles.header}>
-        <h1 className={styles.title}>СВЯЖИТЕСЬ С НАМИ</h1>
-        <p className={styles.subtitle}>Мы всегда рады ответить на ваши вопросы</p>
+        <h1 className={styles.title}>GET IN TOUCH</h1>
+        <p className={styles.subtitle}>We are always happy to answer your questions</p>
       </div>
 
       <div className={styles.contentWrapper}>
-        {/* Левая колонка: Информация */}
+        {/* Left Column: Information */}
         <div className={styles.infoColumn}>
           <div className={styles.infoBlock}>
-            <h3>Посетите Нас</h3>
-            <p>ул. Парфюмерная, 12<br />Париж, Франция, 75001</p>
+            <h3>Visit Us</h3>
+            <p>12 Perfume Lane<br />London, United Kingdom, SW1A 0AA</p>
           </div>
           
           <div className={styles.infoBlock}>
-            <h3>Контакты</h3>
+            <h3>Contact Details</h3>
             <p>Email: hello@aromaticus.com</p>
-            <p>Тел: +33 1 23 45 67 89</p>
+            <p>Tel: +44 20 7946 0123</p>
           </div>
 
           <div className={styles.infoBlock}>
-            <h3>Часы Работы</h3>
-            <p>Пн - Пт: 10:00 - 20:00</p>
-            <p>Сб - Вс: 11:00 - 18:00</p>
+            <h3>Opening Hours</h3>
+            <p>Mon - Fri: 10:00 - 20:00</p>
+            <p>Sat - Sun: 11:00 - 18:00</p>
           </div>
         </div>
 
-        {/* Правая колонка: Форма */}
+        {/* Right Column: Form */}
         <div className={styles.formColumn}>
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <input 
                 type="text" 
                 name="name" 
-                placeholder="Ваше Имя" 
+                placeholder="Your Name" 
                 value={formData.name}
                 onChange={handleChange}
                 required 
@@ -71,7 +70,7 @@ function ContactPage() {
               <input 
                 type="email" 
                 name="email" 
-                placeholder="Email" 
+                placeholder="Email Address" 
                 value={formData.email}
                 onChange={handleChange}
                 required 
@@ -82,7 +81,7 @@ function ContactPage() {
               <input 
                 type="text" 
                 name="subject" 
-                placeholder="Тема сообщения" 
+                placeholder="Subject" 
                 value={formData.subject}
                 onChange={handleChange}
               />
@@ -91,7 +90,7 @@ function ContactPage() {
             <div className={styles.inputGroup}>
               <textarea 
                 name="message" 
-                placeholder="Ваше сообщение..." 
+                placeholder="Your message..." 
                 rows="5"
                 value={formData.message}
                 onChange={handleChange}
@@ -100,7 +99,7 @@ function ContactPage() {
             </div>
 
             <button type="submit" className={styles.submitBtn}>
-              ОТПРАВИТЬ
+              SEND MESSAGE
             </button>
           </form>
         </div>

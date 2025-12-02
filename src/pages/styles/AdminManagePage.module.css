@@ -38,7 +38,6 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Стили для скрытого товара */
 .productItem.hidden {
   background-color: #f9f9f9;
   opacity: 0.6;
@@ -94,7 +93,6 @@
   transform: scale(0.98);
 }
 
-/* Кнопка Скрыть/Показать */
 .toggleBtn {
   background-color: #e0e0e0;
   color: #333;
@@ -105,7 +103,7 @@
 }
 
 .toggleBtn.show {
-  background-color: #4CAF50; /* Зеленый */
+  background-color: #4CAF50;
   color: white;
 }
 
@@ -113,7 +111,6 @@
   background-color: #45a049;
 }
 
-/* Кнопка Удалить */
 .deleteBtn {
   background-color: #ffebee;
   color: #d32f2f;
@@ -128,7 +125,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный черный фон */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,7 +155,7 @@
 }
 
 .modalWarning {
-  font-size: 0.9em !important; /* Уменьшаем шрифт и повышаем приоритет */
+  font-size: 0.9em !important;
   color: #c00 !important;
   font-weight: bold;
 }
@@ -180,7 +177,7 @@
 }
 
 .modalBtnConfirm {
-  background-color: #d32f2f; /* Красный, как кнопка "Удалить" */
+  background-color: #d32f2f;
   color: #fff;
 }
 

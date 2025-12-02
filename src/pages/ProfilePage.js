@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import ProductCard from '../components/ProductCard'; // Импортируем карточку для вишлиста
+import ProductCard from '../components/ProductCard';
 import styles from './styles/ProfilePage.module.css';
 
 function ProfilePage() {
   const [orders, setOrders] = useState([]);
-  const [wishlist, setWishlist] = useState([]); // Стейт для вишлиста
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Состояние для переключения вкладок (по умолчанию 'orders')
   const [activeTab, setActiveTab] = useState('orders'); 
 
   const { showToast } = useToast();
@@ -19,7 +18,7 @@ function ProfilePage() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('userId');
-    showToast('Сессия истекла. Пожалуйста, войдите заново.', 'error');
+    showToast('Session expired. Please log in again.', 'error');
     navigate('/auth');
   }, [navigate, showToast]);
 
@@ -27,11 +26,10 @@ function ProfilePage() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('userId');
-    showToast('Вы вышли из системы', 'success');
+    showToast('You have been logged out', 'success');
     navigate('/');
   };
 
-  // Загрузка данных
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('authToken');
@@ -43,7 +41,8 @@ function ProfilePage() {
       }
 
       try {
-        // 1. Загружаем Заказы
+        setLoading(true);
+        // 1. Fetch Orders
         const ordersResponse = await fetch('http://localhost:5000/api/orders/myorders', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -53,7 +52,7 @@ function ProfilePage() {
           return;
         }
         
-        // 2. Загружаем Вишлист
+        // 2. Fetch Wishlist
         const wishlistResponse = await fetch('http://localhost:5000/api/user/wishlist', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -64,14 +63,13 @@ function ProfilePage() {
            setOrders(ordersData);
            setWishlist(wishlistData);
         } else {
-           throw new Error('Ошибка загрузки данных');
+           throw new Error('Error loading profile data');
         }
 
       } catch (err) {
         console.error(err);
-        // Проверка на токен, чтобы не показывать ошибку при редиректе
         if (localStorage.getItem('authToken')) {
-            showToast('Не удалось загрузить данные профиля', 'error');
+            showToast('Failed to load profile data', 'error');
         }
       } finally {
         setLoading(false);
@@ -81,40 +79,40 @@ function ProfilePage() {
     fetchData();
   }, [navigate, showToast, handleLogout]);
 
-  if (loading) return <div className={styles.loading}>Загрузка профиля...</div>;
+  if (loading) return <div className={styles.loading}>Loading Profile...</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Личный Кабинет</h1>
+        <h1>My Account</h1>
         <button onClick={onLogoutClick} className={styles.logoutBtn}>
-          Выйти
+          Log Out
         </button>
       </div>
 
-      {/* Вкладки (Tabs) */}
+      {/* Tabs */}
       <div className={styles.tabs}>
         <button 
           className={`${styles.tabBtn} ${activeTab === 'orders' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('orders')}
         >
-          Мои Заказы ({orders.length})
+          My Orders ({orders.length})
         </button>
         <button 
           className={`${styles.tabBtn} ${activeTab === 'wishlist' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('wishlist')}
         >
-          Избранное ({wishlist.length})
+          My Wishlist ({wishlist.length})
         </button>
       </div>
 
-      {/* --- СЕКЦИЯ ЗАКАЗОВ --- */}
+      {/* --- ORDERS SECTION --- */}
       {activeTab === 'orders' && (
         <div className={styles.section}>
           {orders.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>У вас пока нет заказов.</p>
-              <Link to="/" className={styles.shopLink}>Перейти в каталог</Link>
+              <p>You currently have no orders.</p>
+              <Link to="/" className={styles.shopLink}>Go to Shop</Link>
             </div>
           ) : (
             <div className={styles.ordersList}>
@@ -122,13 +120,13 @@ function ProfilePage() {
                 <div key={order._id} className={styles.orderCard}>
                   <div className={styles.orderHeader}>
                     <div>
-                      <span className={styles.orderId}>Заказ #{order._id.slice(-6)}</span>
+                      <span className={styles.orderId}>Order #ID: {order._id.slice(-6)}</span>
                       <span className={styles.orderDate}>
-                        {new Date(order.createdAt).toLocaleDateString()}
+                        {new Date(order.createdAt).toLocaleDateString('en-GB')}
                       </span>
                     </div>
                     <div className={styles.orderStatus}>
-                      Статус: <b>{order.status}</b>
+                      Status: <b>{order.status}</b>
                     </div>
                   </div>
 
@@ -149,7 +147,7 @@ function ProfilePage() {
 
                   <div className={styles.orderFooter}>
                     <div className={styles.totalPrice}>
-                      Итого: £{order.totalPrice.toFixed(2)}
+                      Total Paid: £{order.totalPrice.toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -159,18 +157,17 @@ function ProfilePage() {
         </div>
       )}
 
-      {/* --- СЕКЦИЯ ИЗБРАННОГО (ВИШЛИСТ) --- */}
+      {/* --- WISHLIST SECTION --- */}
       {activeTab === 'wishlist' && (
         <div className={styles.section}>
           {wishlist.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>Ваш список желаний пуст.</p>
-              <Link to="/" className={styles.shopLink}>Найти ароматы</Link>
+              <p>Your wishlist is empty.</p>
+              <Link to="/" className={styles.shopLink}>Discover Scents</Link>
             </div>
           ) : (
             <div className={styles.wishlistGrid}>
               {wishlist.map(product => (
-                // Переиспользуем ProductCard для отображения товара
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>

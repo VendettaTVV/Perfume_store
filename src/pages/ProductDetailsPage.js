@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
+import ProductCard from '../components/ProductCard';
 import styles from './styles/ProductDetailsPage.module.css';
 
-// Вспомогательный компонент Звездочек
+// Auxiliary Rating Component
 const Rating = ({ value, text }) => {
   return (
     <div className={styles.rating}>
@@ -27,7 +28,7 @@ function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
 
-  // Стейт для формы отзыва
+  // Review form state
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [reviewLoading, setReviewLoading] = useState(false);
@@ -35,10 +36,15 @@ function ProductDetailsPage() {
   const fetchProductDetails = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/products');
-        const products = await response.json();
-        const foundProduct = products.find(p => p._id === productId);
-        if (foundProduct) setProduct(foundProduct);
+        const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+        
+        if (!response.ok) {
+           throw new Error('Product not found');
+        }
+        
+        const data = await response.json();
+        setProduct(data);
+        
       } catch (err) {
         console.error(err);
       } finally {
@@ -53,14 +59,16 @@ function ProductDetailsPage() {
 
   useEffect(() => {
     if (product) {
-      setSelectedVariant(product.variants[0]);
+      if (!selectedVariant || product.variants.some(v => v.size !== selectedVariant.size)) {
+        setSelectedVariant(product.variants[0]);
+      }
     }
-  }, [product]);
+  }, [product, selectedVariant]);
 
-  // --- ЛОГИКА КОРЗИНЫ ---
-  const getStockInCart = (productId) => {
+  // --- BASKET LOGIC ---
+  const getStockInCart = (id) => {
     return cartItems
-      .filter(item => item.id === productId)
+      .filter(item => item.id === id)
       .reduce((totalMl, item) => totalMl + (item.size * item.quantity), 0);
   };
   
@@ -75,7 +83,7 @@ function ProductDetailsPage() {
   const handleAddToCart = () => {
     if (!product || !selectedVariant) return;
     if (isOutOfStock) {
-      showToast('К сожалению, этого объема нет в наличии', 'error');
+      showToast('Sorry, this volume is out of stock', 'error');
       return;
     }
     const cartItemId = `${product._id}-${selectedVariant.size}ml`;
@@ -88,16 +96,16 @@ function ProductDetailsPage() {
       image: selectedVariant.image
     };
     addToCart(itemToAdd);
-    showToast(`${product.name} (${selectedVariant.size}ml) добавлен в корзину!`);
+    showToast(`${product.name} (${selectedVariant.size}ml) added to basket!`);
   };
 
 
-  // --- ЛОГИКА ОТЗЫВОВ ---
+  // --- REVIEWS LOGIC ---
   const submitReviewHandler = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('authToken');
     if (!token) {
-        showToast('Пожалуйста, войдите, чтобы оставить отзыв', 'error');
+        showToast('Please log in to submit a review', 'error');
         return;
     }
 
@@ -115,7 +123,7 @@ function ProductDetailsPage() {
         const data = await response.json();
 
         if (response.ok) {
-            showToast('Отзыв успешно добавлен!', 'success');
+            showToast('Review submitted successfully!', 'success');
             setRating(5);
             setComment('');
             fetchProductDetails(); 
@@ -123,15 +131,15 @@ function ProductDetailsPage() {
             showToast(data.message, 'error');
         }
     } catch (error) {
-        showToast('Ошибка отправки отзыва', 'error');
+        showToast('Error submitting review', 'error');
     } finally {
         setReviewLoading(false);
     }
   };
 
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>Загрузка...</div>;
-  if (!product || !selectedVariant) return <div style={{ textAlign: 'center', padding: '100px' }}>Продукт не найден</div>;
+  if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>Loading...</div>;
+  if (!product || !selectedVariant) return <div style={{ textAlign: 'center', padding: '100px' }}>Product not found</div>;
 
   return (
     <div className={styles.pageWrapper}>
@@ -144,13 +152,13 @@ function ProductDetailsPage() {
           <h1 className={styles.title}>{product.name}</h1>
           
           <div style={{marginBottom: '20px'}}>
-             <Rating value={product.rating} text={`${product.numReviews} отзывов`} />
+             <Rating value={product.rating} text={`${product.numReviews} reviews`} />
           </div>
 
           <p className={styles.description}>{product.baseDescription}</p>
           <div className={styles.separator}></div>
           
-          <label className={styles.label}>Выберите объем:</label>
+          <label className={styles.label}>Select Volume:</label>
           <div className={styles.variantSelector}>
             {product.variants.map((variant) => (
               <button
@@ -164,89 +172,100 @@ function ProductDetailsPage() {
             ))}
           </div>
 
-          {isOutOfStock && <p className={styles.stockError}>Нет в наличии</p>}
+          {isOutOfStock && <p className={styles.stockError}>Out of Stock</p>}
           <div className={styles.price}>£{selectedVariant.price.toFixed(2)}</div>
 
           <button className={styles.addToCartButton} onClick={handleAddToCart} disabled={isOutOfStock}>
-            Добавить в корзину
+            Add to Basket
           </button>
           
-          {/* ❗️ НОВЫЙ СТИЛЬНЫЙ БЛОК ДОВЕРИЯ (ИСПРАВЛЕН) */}
+          {/* TRUST BADGES BLOCK */}
           <div className={styles.trustBadges}>
-             
-             {/* Бейдж 1: Оригинал */}
-             <div className={styles.badge}>
+              <div className={styles.badge}>
                <span className={styles.badgeIcon}>💎</span>
                <div className={styles.badgeText}>
-                 <span className={styles.badgeTitle}>100% Оригинал</span>
-                 <span className={styles.badgeSubtitle}>Гарантия подлинности</span>
+                 <span className={styles.badgeTitle}>100% Authentic</span>
+                 <span className={styles.badgeSubtitle}>Authenticity guaranteed</span>
                </div>
-             </div>
-
-             {/* Бейдж 2: Ручной распив */}
-             <div className={styles.badge}>
+              </div>
+              <div className={styles.badge}>
                <span className={styles.badgeIcon}>✨</span>
                <div className={styles.badgeText}>
-                 <span className={styles.badgeTitle}>Ручной Распив</span>
-                 <span className={styles.badgeSubtitle}>Сделано с любовью</span>
+                 <span className={styles.badgeTitle}>Hand Decanted</span>
+                 <span className={styles.badgeSubtitle}>Made with care</span>
                </div>
-             </div>
-
+              </div>
           </div>
 
         </div>
       </div>
 
-      {/* --- СЕКЦИЯ ОТЗЫВОВ --- */}
+      {/* SIMILAR PRODUCTS SECTION */}
+      {product.similarProducts && product.similarProducts.length > 0 && (
+        <div className={styles.similarSection}>
+          <h2 className={styles.sectionTitle}>You Might Also Like</h2>
+          <div className={styles.similarGrid}>
+            {product.similarProducts.map(simProduct => (
+              typeof simProduct === 'object' ? (
+                  <div key={simProduct._id} style={{width: 250}}>
+                    <ProductCard product={simProduct} />
+                  </div>
+              ) : null
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* REVIEWS SECTION */}
       <div className={styles.reviewsContainer}>
-        <h2>Отзывы ({product.numReviews})</h2>
+        <h2>Reviews ({product.numReviews})</h2>
         
         <div className={styles.reviewsContent}>
             <div className={styles.reviewList}>
-                {product.reviews.length === 0 && <p style={{fontStyle: 'italic', color: '#777'}}>Нет отзывов. Будьте первым!</p>}
+                {product.reviews.length === 0 && <p style={{fontStyle: 'italic', color: '#777'}}>No reviews yet. Be the first!</p>}
                 {product.reviews.map((review, index) => (
                     <div key={review._id || index} className={styles.reviewItem}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                           <strong>{review.name}</strong>
                           <Rating value={review.rating} />
                         </div>
-                        <p className={styles.reviewDate}>{new Date(review.createdAt).toLocaleDateString()}</p>
+                        <p className={styles.reviewDate}>{new Date(review.createdAt).toLocaleDateString('en-GB')}</p>
                         <p style={{marginTop: '10px', lineHeight: '1.5'}}>{review.comment}</p>
                     </div>
                 ))}
             </div>
 
             <div className={styles.reviewForm}>
-                <h3>Написать отзыв</h3>
+                <h3>Write a Review</h3>
                 {localStorage.getItem('authToken') ? (
                     <form onSubmit={submitReviewHandler}>
                         <div className={styles.formGroup}>
-                            <label>Оценка</label>
+                            <label>Rating</label>
                             <select value={rating} onChange={(e) => setRating(e.target.value)}>
-                                <option value="5">5 - Отлично</option>
-                                <option value="4">4 - Хорошо</option>
-                                <option value="3">3 - Нормально</option>
-                                <option value="2">2 - Так себе</option>
-                                <option value="1">1 - Плохо</option>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Average</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="1">1 - Terrible</option>
                             </select>
                         </div>
                         <div className={styles.formGroup}>
-                            <label>Комментарий</label>
+                            <label>Comment</label>
                             <textarea 
                                 rows="4" 
                                 value={comment} 
                                 onChange={(e) => setComment(e.target.value)}
                                 required
-                                placeholder="Поделитесь своими впечатлениями..."
+                                placeholder="Share your thoughts..."
                             ></textarea>
                         </div>
                         <button type="submit" className={styles.submitReviewBtn} disabled={reviewLoading}>
-                            {reviewLoading ? 'Отправка...' : 'Отправить отзыв'}
+                            {reviewLoading ? 'Submitting...' : 'Submit Review'}
                         </button>
                     </form>
                 ) : (
                     <div style={{padding: '20px', background: '#f9f9f9', borderRadius: '4px'}}>
-                       Пожалуйста <Link to="/auth" style={{textDecoration: 'underline', fontWeight: 'bold', color: '#333'}}>войдите</Link>, чтобы оставить отзыв.
+                        Please <Link to="/auth" style={{textDecoration: 'underline', fontWeight: 'bold', color: '#333'}}>log in</Link> to submit a review.
                     </div>
                 )}
             </div>

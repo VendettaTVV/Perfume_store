@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProductCard from '../components/ProductCard'; // Переиспользуем карточки
+import ProductCard from '../components/ProductCard'; 
 import styles from './styles/WishlistPage.module.css';
 import { useToast } from '../context/ToastContext';
 
@@ -26,12 +26,16 @@ function WishlistPage() {
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
+        } else if (response.status === 401) {
+            // Handle unauthorized, redirect to login
+            navigate('/auth');
+            showToast('Please log in to view your wishlist', 'error');
         } else {
-          throw new Error('Ошибка');
+          throw new Error('Failed to fetch wishlist');
         }
       } catch (err) {
         console.error(err);
-        showToast('Не удалось загрузить избранное', 'error');
+        showToast('Failed to load wishlist', 'error');
       } finally {
         setLoading(false);
       }
@@ -40,18 +44,17 @@ function WishlistPage() {
     fetchWishlist();
   }, [navigate, showToast]);
 
-  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Загрузка...</div>;
+  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Loading...</div>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Мои Избранные Ароматы</h1>
+      <h1 className={styles.title}>My Favourites</h1>
       
       {products.length === 0 ? (
-        <p className={styles.empty}>Ваш список желаний пуст.</p>
+        <p className={styles.empty}>Your wishlist is empty.</p>
       ) : (
         <div className={styles.grid}>
           {products.map(product => (
-            // ❗️ Важно: Передаем product, карточка сама разберется как его отобразить
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

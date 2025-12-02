@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
-// 1. Создаем контекст
 const ToastContext = createContext(null);
 
-// Хук для использования в компонентах
 export const useToast = () => useContext(ToastContext);
 
-// 2. Провайдер
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
@@ -18,7 +15,6 @@ export const ToastProvider = ({ children }) => {
     const id = Date.now().toString();
     setToasts((currentToasts) => [...currentToasts, { id, message, type }]);
     
-    // Удаляем через 3 секунды
     setTimeout(() => removeToast(id), 3000);
   }, []);
 
@@ -30,7 +26,6 @@ export const ToastProvider = ({ children }) => {
   );
 };
 
-// --- ВНУТРЕННИЕ КОМПОНЕНТЫ (Визуал) ---
 
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
@@ -46,7 +41,6 @@ const ToastItem = ({ toast, removeToast }) => {
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    // Анимация появления
     const timer = setTimeout(() => setIsFading(true), 2700); // Начинаем исчезать чуть раньше удаления
     return () => clearTimeout(timer);
   }, []);
@@ -56,7 +50,6 @@ const ToastItem = ({ toast, removeToast }) => {
     setTimeout(() => removeToast(toast.id), 300);
   };
 
-  // Выбор стиля в зависимости от типа (успех или ошибка)
   const typeStyle = toast.type === 'error' ? styles.error : styles.success;
 
   return (
@@ -76,7 +69,6 @@ const ToastItem = ({ toast, removeToast }) => {
   );
 };
 
-// --- СТИЛИ (Внутри JS) ---
 const styles = {
   container: {
     position: 'fixed',
@@ -102,12 +94,12 @@ const styles = {
     lineHeight: '1.4',
   },
   success: {
-    backgroundColor: '#333', // Темный фон (как у вас на сайте)
-    borderLeft: '4px solid #4CAF50', // Зеленая полоска
+    backgroundColor: '#333', 
+    borderLeft: '4px solid #4CAF50', 
   },
   error: {
     backgroundColor: '#333',
-    borderLeft: '4px solid #F44336', // Красная полоска
+    borderLeft: '4px solid #F44336', 
   },
   message: {
     flexGrow: 1,

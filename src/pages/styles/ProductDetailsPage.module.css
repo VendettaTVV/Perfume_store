@@ -33,7 +33,6 @@
 .details {
   flex: 1;
   padding-top: 20px;
-  /* ❗️ Важно: предотвращаем растягивание блока длинным текстом */
   min-width: 0; 
 }
 
@@ -65,8 +64,6 @@
   font-size: 1em;
   line-height: 1.6;
   color: #555;
-  
-  /* ❗️ ИСПРАВЛЕНИЕ ДЛИННОГО ТЕКСТА */
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word; 
@@ -127,12 +124,11 @@
   font-family: 'Playfair Display', serif;
 }
 
-/* ❗️ ИСПРАВЛЕНИЕ КНОПКИ */
 .addToCartButton {
   width: 100%;
   padding: 16px;
   background-color: #333;
-  color: #fff !important; /* Принудительно белый текст */
+  color: #fff !important;
   border: none;
   border-radius: 4px;
   font-size: 1.1em;
@@ -161,7 +157,6 @@
   margin-top: 10px;
 }
 
-/* Блок Доверия */
 .trustBadges {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -207,7 +202,6 @@
   color: #777;
 }
 
-/* Отзывы (остаются как были) */
 .reviewsContainer {
   max-width: 1100px;
   margin: 20px auto 60px;
@@ -235,4 +229,24 @@
   .container { flex-direction: column; gap: 30px; }
   .trustBadges { grid-template-columns: 1fr; }
   .reviewsContent { grid-template-columns: 1fr; }
+}
+.similarSection {
+  max-width: 1200px;
+  margin: 60px auto 0;
+  padding: 0 20px;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #1a1a1a;
+}
+
+.similarGrid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
 }

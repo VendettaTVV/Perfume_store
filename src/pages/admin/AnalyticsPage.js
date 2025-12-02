@@ -3,7 +3,6 @@ import styles from './styles/AnalyticsPage.module.css';
 import { useToast } from '../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
-// Импорты для графиков
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,11 +13,10 @@ import {
   Title as ChartTitle,
   Tooltip,
   Legend,
-  Filler, // 👈 1. ИМПОРТИРУЕМ FILLER
+  Filler,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 
-// Регистрируем компоненты Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,7 +26,7 @@ ChartJS.register(
   ChartTitle,
   Tooltip,
   Legend,
-  Filler // 👈 2. РЕГИСТРИРУЕМ FILLER
+  Filler
 );
 
 const API_URL = 'http://localhost:5000';
@@ -41,7 +39,7 @@ const AnalyticsPage = () => {
 
   const handleAuthError = useCallback((response) => {
     if (response.status === 401 || response.status === 403) {
-      showToast('Сессия истекла. Войдите заново.', 'error');
+      showToast('Session expired. Please log in again.', 'error');
       localStorage.removeItem('authToken');
       localStorage.removeItem('isAdmin');
       navigate('/auth');
@@ -53,7 +51,7 @@ const AnalyticsPage = () => {
   const fetchAnalytics = useCallback(async () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      showToast('Необходимо войти.', 'error');
+      showToast('Login required.', 'error');
       navigate('/auth');
       return;
     }
@@ -61,17 +59,21 @@ const AnalyticsPage = () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/api/orders/analytics`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       
       if (handleAuthError(response)) return;
-      if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
 
       const data = await response.json();
       setAnalyticsData(data);
     } catch (err) {
-      console.error('Ошибка при получении аналитики:', err);
-      showToast('Не удалось загрузить данные аналитики.', 'error');
+      showToast('Failed to load analytics data.', 'error');
     } finally {
       setLoading(false);
     }
@@ -81,36 +83,45 @@ const AnalyticsPage = () => {
     fetchAnalytics();
   }, [fetchAnalytics]);
 
-  if (loading) return <div className={styles.container} style={{textAlign: 'center', padding: '100px'}}>Загрузка...</div>;
+  if (loading) {
+    return (
+      <div className={styles.container} style={{textAlign: 'center', padding: '100px'}}>
+        Loading...
+      </div>
+    );
+  }
 
-  if (!analyticsData || !analyticsData.summary) {
+  if (!analyticsData || !analyticsData.summary || analyticsData.summary.totalOrders === 0) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.header}>Отчеты и Аналитика</h1>
-        <p>Нет доступных данных. Оплаченных заказов не найдено.</p>
+        <h1 className={styles.header}>Reports & Analytics</h1>
+        <p>No paid orders found to display data.</p>
       </div>
     );
   }
 
   const { summary, monthlySales, topProductsAllTime, topProductsThisMonth } = analyticsData;
 
-  // Графики
-  const labels = monthlySales.map(item => item.date);
+  const labels = monthlySales.map(item => {
+    const [year, month] = item.date.split('-');
+    return `${month}/${year}`;
+  });
+
   const revenueChartData = {
     labels,
     datasets: [{
-      label: 'Общая Выручка (£)',
+      label: 'Total Revenue (£)',
       data: monthlySales.map(item => parseFloat(item.totalRevenue.toFixed(2))),
       borderColor: '#2980b9',
       backgroundColor: 'rgba(41, 128, 185, 0.5)',
-      fill: true, // Теперь это будет работать без ошибки
+      fill: true,
       tension: 0.3,
     }],
   };
   const ordersChartData = {
     labels,
     datasets: [{
-      label: 'Количество Заказов',
+      label: 'Total Orders',
       data: monthlySales.map(item => item.totalOrders),
       backgroundColor: '#8e44ad',
       borderColor: '#8e44ad',
@@ -122,15 +133,15 @@ const AnalyticsPage = () => {
     <div className={styles.tableSection}>
       <h3>{title}</h3>
       {(!data || data.length === 0) ? (
-        <p>Нет продаж за этот период.</p>
+        <p>No sales during this period.</p>
       ) : (
         <table className={styles.productTable}>
           <thead>
             <tr>
-              <th>Товар</th>
-              <th>Объем</th>
-              <th>Продано (шт)</th>
-              <th>Общий объем (мл)</th>
+              <th>Product</th>
+              <th>Volume</th>
+              <th>Sold (units)</th>
+              <th>Total Volume (ml)</th>
             </tr>
           </thead>
           <tbody>
@@ -150,31 +161,35 @@ const AnalyticsPage = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>Отчеты и Аналитика</h1>
+      <h1 className={styles.header}>Reports & Analytics</h1>
 
-      <h3 className={styles.sectionTitle}>Общая Сводка</h3>
+      <h3 className={styles.sectionTitle}>Overall Summary</h3>
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
-          <div className={styles.cardTitle}>Чистая Выручка</div>
-          <div className={styles.cardValue}>£{summary.totalRevenue.toFixed(2)}</div>
+          <div className={styles.cardTitle}>Net Revenue</div>
+          <div className={styles.cardValue}>
+            £{summary.totalRevenue.toFixed(2)}
+          </div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.cardTitle}>Всего Заказов</div>
+          <div className={styles.cardTitle}>Total Orders</div>
           <div className={styles.cardValue}>{summary.totalOrders}</div>
         </div>
         <div className={styles.summaryCard}>
-          <div className={styles.cardTitle}>Средний Чек</div>
-          <div className={styles.cardValue}>£{summary.avgOrderValue.toFixed(2)}</div>
+          <div className={styles.cardTitle}>Avg Order Value</div>
+          <div className={styles.cardValue}>
+            £{summary.avgOrderValue.toFixed(2)}
+          </div>
         </div>
       </div>
 
       <div className={styles.tablesContainer}>
-        <ProductTable title="Топ продаж (Текущий месяц)" data={topProductsThisMonth} />
-        <ProductTable title="Топ продаж (За все время)" data={topProductsAllTime} />
+        <ProductTable title="Top Sellers (Current Month)" data={topProductsThisMonth} />
+        <ProductTable title="Top Sellers (All Time)" data={topProductsAllTime} />
       </div>
 
       <div className={styles.chartContainer}>
-        <h3 className={styles.sectionTitle}>Ежемесячная Динамика</h3>
+        <h3 className={styles.sectionTitle}>Monthly Performance</h3>
         <div className={styles.chart}><Line options={{responsive:true, maintainAspectRatio: false}} data={revenueChartData} /></div>
         <div className={styles.chart}><Bar options={{responsive:true, maintainAspectRatio: false}} data={ordersChartData} /></div>
       </div>

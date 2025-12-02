@@ -3,45 +3,36 @@ import { useNavigate } from 'react-router-dom';
 import styles from './styles/AdminProductsPage.module.css';
 import { useToast } from '../context/ToastContext';
 
-// --- МОДАЛКА: ИЗМЕНЕНИЕ ФОТО ---
-const EditImageModal = ({ product, onConfirm, onCancel }) => {
-  const [newImages, setNewImages] = useState({}); // { 0: file, 1: file }
+// --- MODALS ---
 
+const ConfirmDeleteModal = ({ product, onConfirm, onCancel }) => {
   if (!product) return null;
-
-  const handleFileChange = (index, file) => {
-    setNewImages(prev => ({ ...prev, [index]: file }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onConfirm(newImages);
-  };
-
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Изменить фото: {product.name}</h3>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.variantsList}>
-            {product.variants.map((variant, index) => (
-              <div key={index} className={styles.variantRow}>
-                <img src={variant.image} alt="" width="40" height="40" style={{objectFit:'cover', borderRadius:4}} />
-                <span className={styles.variantLabel}>{variant.size} ml</span>
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(index, e.target.files[0])}
-                  style={{flex: 1}}
-                />
-              </div>
-            ))}
-          </div>
+        <h3>Delete {product.name}?</h3>
+        <div className={styles.modalActions}>
+          <button onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+          <button onClick={onConfirm} className={styles.modalBtnConfirm} style={{backgroundColor: '#d32f2f'}}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const RestockModal = ({ product, onConfirm, onCancel }) => {
+  const [amountToAdd, setAmountToAdd] = useState('');
+  if (!product) return null;
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <h3>Restock: {product.name}</h3>
+        <p>Current Stock: <b>{product.totalStockMl} ml</b></p>
+        <form onSubmit={(e) => { e.preventDefault(); onConfirm(Number(amountToAdd)); setAmountToAdd(''); }}>
+          <input type="number" className={styles.restockInput} value={amountToAdd} onChange={(e) => setAmountToAdd(e.target.value)} placeholder="E.g. 1000" required autoFocus />
           <div className={styles.modalActions}>
-            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
-            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#8e44ad'}}>
-              Загрузить
-            </button>
+            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#27ae60'}}>Add</button>
           </div>
         </form>
       </div>
@@ -49,39 +40,15 @@ const EditImageModal = ({ product, onConfirm, onCancel }) => {
   );
 };
 
-// --- МОДАЛКА: ОПИСАНИЕ ---
-const EditDescriptionModal = ({ product, onConfirm, onCancel }) => {
-  const [description, setDescription] = useState('');
-  useEffect(() => { if (product) setDescription(product.baseDescription); }, [product]);
-  if (!product) return null;
-  return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h3>Редактировать описание</h3>
-        <form onSubmit={(e) => { e.preventDefault(); onConfirm(description); }}>
-          <textarea className={styles.descriptionInput} value={description} onChange={(e) => setDescription(e.target.value)} rows="6" required />
-          <div className={styles.modalActions}>
-            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
-            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#e67e22'}}>Сохранить</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-// --- МОДАЛКА: ЦЕНЫ ---
 const EditPriceModal = ({ product, onConfirm, onCancel }) => {
   const [editedVariants, setEditedVariants] = useState([]);
   useEffect(() => { if (product) setEditedVariants(product.variants.map(v => ({ ...v }))); }, [product]);
   if (!product) return null;
-  const handlePriceChange = (index, newPrice) => {
-    const newVars = [...editedVariants]; newVars[index].price = Number(newPrice); setEditedVariants(newVars);
-  };
+  const handlePriceChange = (index, newPrice) => { const newVars = [...editedVariants]; newVars[index].price = Number(newPrice); setEditedVariants(newVars); };
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Изменить цены</h3>
+        <h3>Edit Prices</h3>
         <form onSubmit={(e) => { e.preventDefault(); onConfirm(editedVariants); }}>
           <div className={styles.variantsList}>
             {editedVariants.map((variant, index) => (
@@ -93,8 +60,8 @@ const EditPriceModal = ({ product, onConfirm, onCancel }) => {
             ))}
           </div>
           <div className={styles.modalActions}>
-            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
-            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#2980b9'}}>Сохранить</button>
+            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#2980b9'}}>Save</button>
           </div>
         </form>
       </div>
@@ -102,20 +69,19 @@ const EditPriceModal = ({ product, onConfirm, onCancel }) => {
   );
 };
 
-// --- МОДАЛКА: СКЛАД ---
-const RestockModal = ({ product, onConfirm, onCancel }) => {
-  const [amountToAdd, setAmountToAdd] = useState('');
+const EditDescriptionModal = ({ product, onConfirm, onCancel }) => {
+  const [description, setDescription] = useState('');
+  useEffect(() => { if (product) setDescription(product.baseDescription); }, [product]);
   if (!product) return null;
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Пополнить склад</h3>
-        <p>Текущий: <b>{product.totalStockMl} мл</b></p>
-        <form onSubmit={(e) => { e.preventDefault(); onConfirm(Number(amountToAdd)); setAmountToAdd(''); }}>
-          <input type="number" className={styles.restockInput} value={amountToAdd} onChange={(e) => setAmountToAdd(e.target.value)} placeholder="Например: 1000" required autoFocus />
+        <h3>Edit Description</h3>
+        <form onSubmit={(e) => { e.preventDefault(); onConfirm(description); }}>
+          <textarea className={styles.descriptionInput} value={description} onChange={(e) => setDescription(e.target.value)} rows="6" required />
           <div className={styles.modalActions}>
-            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
-            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#27ae60'}}>Добавить</button>
+            <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+            <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#e67e22'}}>Save</button>
           </div>
         </form>
       </div>
@@ -123,39 +89,94 @@ const RestockModal = ({ product, onConfirm, onCancel }) => {
   );
 };
 
-// --- МОДАЛКА: УДАЛЕНИЕ ---
-const ConfirmDeleteModal = ({ product, onConfirm, onCancel }) => {
+const EditImageModal = ({ product, onConfirm, onCancel }) => {
+    const [newImages, setNewImages] = useState({});
+    if (!product) return null;
+    const handleFileChange = (index, file) => { setNewImages(prev => ({ ...prev, [index]: file })); };
+    return (
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContent}>
+          <h3>Change Photo</h3>
+          <form onSubmit={(e) => { e.preventDefault(); onConfirm(newImages); }}>
+            <div className={styles.variantsList}>
+              {product.variants.map((variant, index) => (
+                <div key={index} className={styles.variantRow}>
+                  <img src={variant.image} alt={variant.size + 'ml'} width="40" height="40" style={{objectFit:'cover', borderRadius:4}} />
+                  <span className={styles.variantLabel}>{variant.size} ml</span>
+                  <input type="file" accept="image/*" onChange={(e) => handleFileChange(index, e.target.files[0])} style={{flex: 1}} />
+                </div>
+              ))}
+            </div>
+            <div className={styles.modalActions}>
+              <button type="button" onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+              <button type="submit" className={styles.modalBtnConfirm} style={{backgroundColor: '#8e44ad'}}>Upload</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+};
+
+const EditSimilarModal = ({ product, allProducts, onConfirm, onCancel }) => {
+  const [selectedIds, setSelectedIds] = useState([]);
+  useEffect(() => {
+    if (product && product.similarProducts) {
+      const ids = product.similarProducts.map(p => (p && typeof p === 'object') ? p._id : p);
+      setSelectedIds(ids);
+    }
+  }, [product]);
+  
   if (!product) return null;
+  
+  const toggleSelection = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]);
+  };
+  
+  const handleSubmit = (e) => { e.preventDefault(); onConfirm(selectedIds); };
+  
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Удалить {product.name}?</h3>
+        <h3>Cross-Sell Products</h3>
+        <div className={styles.similarList}>
+            {allProducts
+              .filter(p => p._id !== product._id)
+              .map(p => (
+                <div key={p._id} className={`${styles.similarItem} ${selectedIds.includes(p._id) ? styles.selected : ''}`} onClick={() => toggleSelection(p._id)}>
+                  <img src={p.variants[0]?.image} alt={p.name} className={styles.miniImg}/>
+                  <span>{p.name}</span>
+                  {selectedIds.includes(p._id) && <span className={styles.checkMark}>✔</span>}
+                </div>
+            ))}
+        </div>
         <div className={styles.modalActions}>
-          <button onClick={onCancel} className={styles.modalBtnCancel}>Отмена</button>
-          <button onClick={onConfirm} className={styles.modalBtnConfirm}>Удалить</button>
+            <button onClick={onCancel} className={styles.modalBtnCancel}>Cancel</button>
+            <button onClick={handleSubmit} className={styles.modalBtnConfirm} style={{backgroundColor: '#00acc1'}}>Save</button>
         </div>
       </div>
     </div>
   );
 };
 
+// --- MAIN COMPONENT ---
 
 function AdminProductsPage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); 
   const [loading, setLoading] = useState(true);
   
   const [productToDelete, setProductToDelete] = useState(null);
   const [productToRestock, setProductToRestock] = useState(null);
   const [productToEditPrice, setProductToEditPrice] = useState(null);
   const [productToEditDesc, setProductToEditDesc] = useState(null);
-  const [productToEditImage, setProductToEditImage] = useState(null); // ❗️ Состояние для фото
+  const [productToEditImage, setProductToEditImage] = useState(null);
+  const [productToEditSimilar, setProductToEditSimilar] = useState(null);
 
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleAuthError = useCallback((response) => {
     if (response.status === 401 || response.status === 403) {
-      showToast('Сессия истекла.', 'error');
+      showToast('Session expired. Please log in again.', 'error');
       localStorage.removeItem('authToken');
       localStorage.removeItem('isAdmin');
       navigate('/auth');
@@ -169,14 +190,25 @@ function AdminProductsPage() {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) { navigate('/auth'); return; }
+      
       const response = await fetch('http://localhost:5000/api/products/all', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (handleAuthError(response)) return;
+      
       const data = await response.json();
-      setProducts(data);
+
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        setProducts([]);
+        showToast('Server data error.', 'error');
+      }
+
     } catch (err) {
-      showToast('Не удалось загрузить товары', 'error');
+      showToast('Failed to load products', 'error');
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -186,8 +218,7 @@ function AdminProductsPage() {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
-  // --- ФУНКЦИИ ОБРАБОТКИ ---
-
+  // --- ACTIONS ---
   const toggleVisibility = async (id, currentStatus) => {
       try {
         const token = localStorage.getItem('authToken');
@@ -197,10 +228,9 @@ function AdminProductsPage() {
             body: JSON.stringify({ isHidden: !currentStatus })
         });
         fetchAllProducts();
-        showToast('Видимость изменена', 'success');
-      } catch (e) { showToast('Ошибка', 'error'); }
+        showToast('Visibility updated', 'success');
+      } catch (e) { showToast('Error', 'error'); }
   };
-
   const handleConfirmDelete = async () => {
       if (!productToDelete) return;
       try {
@@ -209,11 +239,10 @@ function AdminProductsPage() {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
           });
-          showToast('Удалено', 'success');
+          showToast('Deleted', 'success');
           fetchAllProducts();
-      } catch (e) { showToast('Ошибка', 'error'); } finally { setProductToDelete(null); }
+      } catch (e) { showToast('Error', 'error'); } finally { setProductToDelete(null); }
   };
-
   const handleConfirmRestock = async (val) => {
       if (!productToRestock) return;
       try {
@@ -224,11 +253,10 @@ function AdminProductsPage() {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({ totalStockMl: newTotal })
           });
-          showToast('Склад пополнен', 'success');
+          showToast('Stock replenished', 'success');
           fetchAllProducts();
-      } catch (e) { showToast('Ошибка', 'error'); } finally { setProductToRestock(null); }
+      } catch (e) { showToast('Error', 'error'); } finally { setProductToRestock(null); }
   };
-
   const handleConfirmPriceEdit = async (vars) => {
       if (!productToEditPrice) return;
       try {
@@ -238,11 +266,10 @@ function AdminProductsPage() {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({ variants: vars })
           });
-          showToast('Цены обновлены', 'success');
+          showToast('Prices updated', 'success');
           fetchAllProducts();
-      } catch (e) { showToast('Ошибка', 'error'); } finally { setProductToEditPrice(null); }
+      } catch (e) { showToast('Error', 'error'); } finally { setProductToEditPrice(null); }
   };
-
   const handleConfirmDescriptionEdit = async (desc) => {
        if (!productToEditDesc) return;
        try {
@@ -252,102 +279,79 @@ function AdminProductsPage() {
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({ baseDescription: desc })
           });
-          showToast('Описание обновлено', 'success');
+          showToast('Description updated', 'success');
           fetchAllProducts();
-       } catch (e) { showToast('Ошибка', 'error'); } finally { setProductToEditDesc(null); }
+       } catch (e) { showToast('Error', 'error'); } finally { setProductToEditDesc(null); }
   };
-
-  // ❗️ ФУНКЦИЯ ЗАГРУЗКИ ФОТО
   const handleConfirmImageEdit = async (newImagesMap) => {
     if (!productToEditImage) return;
-
-    if (Object.keys(newImagesMap).length === 0) {
-        setProductToEditImage(null);
-        return;
-    }
-
+    if (Object.keys(newImagesMap).length === 0) { setProductToEditImage(null); return; }
     try {
         const token = localStorage.getItem('authToken');
         const formData = new FormData();
-        
-        // Добавляем файлы
-        Object.keys(newImagesMap).forEach(index => {
-            formData.append(`image-${index}`, newImagesMap[index]);
-        });
-        
-        // Отправляем текущие варианты (чтобы бэкенд знал структуру)
+        Object.keys(newImagesMap).forEach(index => { formData.append(`image-${index}`, newImagesMap[index]); });
         formData.append('variants', JSON.stringify(productToEditImage.variants));
-
         const response = await fetch(`http://localhost:5000/api/products/${productToEditImage._id}`, {
             method: 'PATCH',
-            headers: { 
-                'Authorization': `Bearer ${token}` 
-                // ❗️ Content-Type не ставим, это FormData
-            },
+            headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
-
         if (handleAuthError(response)) return;
-        if (response.ok) {
-            showToast('Фото обновлены!', 'success');
-            fetchAllProducts();
-        }
-    } catch (err) {
-        console.error(err);
-        showToast('Ошибка загрузки фото', 'error');
-    } finally {
-        setProductToEditImage(null);
-    }
+        if (response.ok) { showToast('Photo updated!', 'success'); fetchAllProducts(); }
+    } catch (err) { showToast('Error loading photo', 'error'); } finally { setProductToEditImage(null); }
   };
 
-  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Загрузка товаров...</div>;
+  const handleConfirmSimilarEdit = async (similarIds) => {
+    if (!productToEditSimilar) return;
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`http://localhost:5000/api/products/${productToEditSimilar._id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ similarProducts: JSON.stringify(similarIds) })
+        });
+        if (handleAuthError(response)) return;
+        if (response.ok) { showToast('Recommendations updated!', 'success'); fetchAllProducts(); }
+    } catch (err) { showToast('Error', 'error'); } finally { setProductToEditSimilar(null); }
+  };
+
+  if (loading) return <div style={{padding: 50, textAlign: 'center'}}>Loading products...</div>;
 
   return (
     <div className={styles.container}>
-      
+      {/* MODALS */}
       <ConfirmDeleteModal product={productToDelete} onConfirm={handleConfirmDelete} onCancel={() => setProductToDelete(null)} />
       <RestockModal product={productToRestock} onConfirm={handleConfirmRestock} onCancel={() => setProductToRestock(null)} />
       <EditPriceModal product={productToEditPrice} onConfirm={handleConfirmPriceEdit} onCancel={() => setProductToEditPrice(null)} />
       <EditDescriptionModal product={productToEditDesc} onConfirm={handleConfirmDescriptionEdit} onCancel={() => setProductToEditDesc(null)} />
-      
-      {/* ❗️ Модалка Фото */}
       <EditImageModal product={productToEditImage} onConfirm={handleConfirmImageEdit} onCancel={() => setProductToEditImage(null)} />
+      <EditSimilarModal product={productToEditSimilar} allProducts={products} onConfirm={handleConfirmSimilarEdit} onCancel={() => setProductToEditSimilar(null)} />
 
-      <h1 className={styles.header}>Управление Товарами (Склад)</h1>
+      <h1 className={styles.header}>Inventory Management</h1>
       
       <div className={styles.productList}>
-        {products.map(product => (
+        {Array.isArray(products) && products.map(product => (
           <div key={product._id} className={`${styles.productItem} ${product.isHidden ? styles.hidden : ''}`}>
-            
-            <img src={product.variants[0]?.image} alt="" className={styles.productImage}/>
+            <img src={product.variants[0]?.image} alt={product.name} className={styles.productImage}/>
             
             <div className={styles.productInfo}>
-              <h3 className={styles.productName}>
-                {product.name} {product.isHidden && '(Скрыт)'}
-              </h3>
-              <p className={styles.productStock}>
-                Запас: <b style={{color: product.totalStockMl < 50 ? 'red' : 'green'}}>{product.totalStockMl} мл</b>
-              </p>
-              <p style={{fontSize: '0.8em', color: '#777', marginTop: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '300px'}}>
-                {product.baseDescription}
-              </p>
+              <h3 className={styles.productName}>{product.name} {product.isHidden && '(Hidden)'}</h3>
+              <p className={styles.productStock}>Stock: <b style={{color: product.totalStockMl < 50 ? 'red' : 'green'}}>{product.totalStockMl} ml</b></p>
             </div>
 
             <div className={styles.actions}>
-              <button className={`${styles.btn} ${styles.restockBtn}`} onClick={() => setProductToRestock(product)} title="Пополнить склад">+ МЛ</button>
-              <button className={`${styles.btn} ${styles.priceBtn}`} onClick={() => setProductToEditPrice(product)} title="Изменить цену">£</button>
-              <button className={`${styles.btn} ${styles.descBtn}`} onClick={() => setProductToEditDesc(product)} title="Редактировать описание">Txt</button>
-              
-              {/* ❗️ Кнопка Фото */}
-              <button className={`${styles.btn} ${styles.imgBtn}`} onClick={() => setProductToEditImage(product)} title="Изменить фото">📷</button>
-
-              <button className={`${styles.btn} ${styles.toggleBtn}`} onClick={() => toggleVisibility(product._id, product.isHidden)}>
-                {product.isHidden ? 'Показать' : 'Скрыть'}
-              </button>
-              <button className={`${styles.btn} ${styles.deleteBtn}`} onClick={() => setProductToDelete(product)}>Удалить</button>
+              <button className={`${styles.btn} ${styles.restockBtn}`} onClick={() => setProductToRestock(product)} title="Restock">+ ML</button>
+              <button className={`${styles.btn} ${styles.priceBtn}`} onClick={() => setProductToEditPrice(product)} title="Edit Price">£</button>
+              <button className={`${styles.btn} ${styles.descBtn}`} onClick={() => setProductToEditDesc(product)} title="Edit Description">Txt</button>
+              <button className={`${styles.btn} ${styles.imgBtn}`} onClick={() => setProductToEditImage(product)} title="Change Photo">📷</button>
+              <button className={`${styles.btn} ${styles.similarBtn}`} onClick={() => setProductToEditSimilar(product)} title="Cross-Sell">🔗</button>
+              <button className={`${styles.btn} ${styles.toggleBtn}`} onClick={() => toggleVisibility(product._id, product.isHidden)}>{product.isHidden ? 'Show' : 'Hide'}</button>
+              <button className={`${styles.btn} ${styles.deleteBtn}`} onClick={() => setProductToDelete(product)}>Delete</button>
             </div>
           </div>
         ))}
+        
+        {Array.isArray(products) && products.length === 0 && <p>No products found.</p>}
       </div>
     </div>
   );

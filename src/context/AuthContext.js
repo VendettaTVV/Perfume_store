@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Проверяем авторизацию при загрузке сайта
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     const userId = localStorage.getItem('userId');
@@ -20,7 +19,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Функция Входа
   const login = (token, userData) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('userId', userData._id);
@@ -33,7 +31,6 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  // Функция Выхода
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');

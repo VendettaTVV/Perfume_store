@@ -8,7 +8,6 @@ function SignatureScents({ products }) {
       <h2 className={styles.title}>SIGNATURE SCENTS</h2>
       <div className={styles.productList}>
         {products.map(product => (
-          // ❗️ ИСПРАВЛЕНИЕ: Используем _id (от MongoDB) или id (резерв)
           <ProductCard key={product._id || product.id} product={product} />
         ))}
       </div>

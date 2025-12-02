@@ -1,5 +1,4 @@
 .signatureScents {
-  /* ❗️ Уменьшили верхний отступ (было 80px), чтобы подтянуть блок вверх */
   padding: 30px 20px 80px; 
   background-color: #fff;
   text-align: center;

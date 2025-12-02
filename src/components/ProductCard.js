@@ -5,9 +5,6 @@ import { useToast } from '../context/ToastContext';
 
 function ProductCard({ product }) {
   const { showToast } = useToast();
-  
-  // В идеале здесь нужно проверять, лайкнут ли товар при загрузке,
-  // но для простоты пока сделаем локальный стейт (сердечко загорится при клике)
   const [isLiked, setIsLiked] = useState(false);
 
   const minSize = product.variants.reduce(
@@ -23,14 +20,13 @@ function ProductCard({ product }) {
   const mainImage = product.variants[0].image;
   const isOutOfStock = product.totalStockMl < minSize;
 
-  // Функция лайка
   const handleLike = async (e) => {
-    e.preventDefault(); // Чтобы не переходить по ссылке карточки
+    e.preventDefault();
     e.stopPropagation();
 
     const token = localStorage.getItem('authToken');
     if (!token) {
-      showToast('Войдите, чтобы добавить в избранное', 'error');
+      showToast('Please log in to add to favourites', 'error');
       return;
     }
 
@@ -58,11 +54,10 @@ function ProductCard({ product }) {
           
           {isOutOfStock && <span className={styles.soldOutBadge}>Sold Out</span>}
 
-          {/* ❗️ КНОПКА ЛАЙКА */}
           <button 
             className={`${styles.likeBtn} ${isLiked ? styles.liked : ''}`} 
             onClick={handleLike}
-            title="Добавить в избранное"
+            title="Add to Wishlist"
           >
             ♥
           </button>
@@ -72,9 +67,9 @@ function ProductCard({ product }) {
           <h3 className={styles.name}>{product.name}</h3>
           
           {isOutOfStock ? (
-             <p className={styles.price} style={{color: '#666', fontStyle: 'italic'}}>Нет в наличии</p>
+             <p className={styles.price} style={{color: '#666', fontStyle: 'italic'}}>Out of Stock</p>
           ) : (
-             <p className={styles.price}>От £{startingPrice.toFixed(2)}</p>
+             <p className={styles.price}>From £{startingPrice.toFixed(2)}</p>
           )}
           
         </div>

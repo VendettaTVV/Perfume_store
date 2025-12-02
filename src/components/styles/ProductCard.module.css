@@ -1,37 +1,120 @@
-/* ... существующие стили ... */
 
-/* ❗️ Новые стили для лайка */
 .cardWrapper {
   position: relative;
   height: 100%;
   width: 100%;
 }
 
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%; 
+}
+
+.card {
+  height: 100%; 
+  padding: 0;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  
+  display: flex;
+  flex-direction: column; 
+  
+  transition: transform 0.3s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
 .likeBtn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
+  background: rgba(255, 255, 255, 0.9); 
+  border: 1px solid #eee;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   font-size: 1.2em;
-  color: #ccc; /* Серый по умолчанию */
+  color: #ccc; 
   cursor: pointer;
-  z-index: 10; /* Поверх картинки и ссылки */
+  z-index: 10; 
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  padding-top: 3px; /* Центровка сердца */
+  padding-top: 2px; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .likeBtn:hover {
   transform: scale(1.1);
-  color: #e74c3c;
+  color: #e74c3c; 
+  background: #fff;
 }
 
 .likeBtn.liked {
-  color: #e74c3c; /* Красный если лайкнуто */
+  color: #e74c3c; 
+}
+
+
+.outOfStock {
+  opacity: 0.6;
+}
+.outOfStock .image {
+  filter: grayscale(100%);
+  opacity: 0.8;
+}
+
+.soldOutBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 2;
+}
+
+.image {
+  width: 100%;
+  height: 320px; 
+  object-fit: contain; 
+  object-position: center;
+  margin-bottom: 15px;
+  border-radius: 0; 
+  background-color: #fff; 
+}
+
+.name {
+  font-size: 1em;
+  margin: 0 0 5px 0;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price {
+  font-size: 0.95em;
+  font-weight: 400;
+  color: #555;
+  margin-top: auto; 
+  padding-bottom: 10px;
 }

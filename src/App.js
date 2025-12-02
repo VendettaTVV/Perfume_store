@@ -4,13 +4,13 @@ import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 
-// Импорты компонентов
+// Component Imports
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 
-// Импорты Публичных Страниц
+// Public Page Imports
 import HomePage from './pages/HomePage';
 import CartPage from './pages/CartPage';
 import RegisterLoginPage from './pages/RegisterLoginPage';
@@ -21,9 +21,9 @@ import SuccessPage from './pages/SuccessPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import DiscoverySetPage from './pages/DiscoverySetPage';
-import WishlistPage from './pages/WishlistPage'; // 👈 1. НОВЫЙ ИМПОРТ
+import WishlistPage from './pages/WishlistPage'; 
 
-// Импорты Админ-Страниц
+// Admin Page Imports
 import AddProductForm from './components/admin/AddProductForm';
 import AdminManagePage from './pages/AdminManagePage'; 
 import AdminProductsPage from './pages/AdminProductsPage';
@@ -43,7 +43,7 @@ function App() {
             <Header />
             <main>
               <Routes>
-                {/* --- ПУБЛИЧНЫЕ РОУТЫ --- */}
+                {/* PUBLIC ROUTES */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/auth" element={<RegisterLoginPage />} />
@@ -59,7 +59,6 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                {/* 👈 2. НОВЫЙ РОУТ ВИШЛИСТА */}
                 <Route path="/wishlist" element={
                   <ProtectedRoute>
                     <WishlistPage />
@@ -68,7 +67,7 @@ function App() {
                 
                 <Route path="/discovery-set" element={<DiscoverySetPage />} />
                 
-                {/* --- АДМИН РОУТЫ --- */}
+                {/* ADMIN ROUTES */}
                 <Route path="/admin/add" element={
                   <ProtectedRoute adminOnly={true}><AddProductForm /></ProtectedRoute>
                 } />
@@ -82,7 +81,7 @@ function App() {
                   <ProtectedRoute adminOnly={true}><AnalyticsPage /></ProtectedRoute>
                 } />
                 
-                <Route path="*" element={<h1 style={{ textAlign: 'center', padding: '50px' }}>404</h1>} />
+                <Route path="*" element={<h1 style={{ textAlign: 'center', padding: '50px' }}>404 - Page Not Found</h1>} />
               </Routes>
             </main>
             <Footer />

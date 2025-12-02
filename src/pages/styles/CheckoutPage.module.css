@@ -6,7 +6,6 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
   font-family: 'Segoe UI', sans-serif;
-  /* align-items: stretch; - это значение по умолчанию для Grid, оно делает колонки равными */
 }
 
 .title {
@@ -18,19 +17,17 @@
   padding-bottom: 10px;
 }
 
-/* --- Левая Колонка (Форма) --- */
 .formColumn {
   background: #fff;
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  /* Добавляем flex, чтобы контент занимал всю высоту при необходимости */
   display: flex;
   flex-direction: column;
 }
 
 .form {
-  height: 100%; /* Форма занимает всю высоту колонки */
+  height: 100%;
 }
 
 .form h2 {
@@ -74,7 +71,6 @@
   outline: none;
 }
 
-/* --- Опции Доставки --- */
 .shippingOptions label {
   display: block;
   padding: 15px;
@@ -94,23 +90,14 @@
   margin-right: 10px;
 }
 
-/* --- Правая Колонка (Итог) --- */
 .summaryColumn {
   background: #fcfcfc;
   padding: 30px;
   border-radius: 8px;
   border: 1px solid #eee;
-  
-  /* ❗️ ИЗМЕНЕНИЕ: Убрали height: fit-content */
-  /* Теперь блок растянется на всю высоту соседней колонки */
   display: flex;
   flex-direction: column;
 }
-
-/* Добавляем flex-grow последнему элементу перед кнопкой, 
-   если хотите, чтобы кнопка всегда была в самом низу блока.
-   Если нет, этот блок можно пропустить. 
-*/
 
 .summaryColumn h2 {
   font-size: 1.3em;
@@ -121,7 +108,7 @@
 
 .summaryItems {
   margin-bottom: 20px;
-  max-height: 300px; /* Чуть увеличили место для списка */
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -133,12 +120,11 @@
   color: #555;
 }
 
-/* --- Стили Купона --- */
 .couponSection {
   margin: 20px 0;
   padding-top: 20px;
   border-top: 1px solid #eee;
-  margin-top: auto; /* ❗️ Прижимаем купон и итог к низу, если колонка растянулась */
+  margin-top: auto;
 }
 
 .couponLabel {
@@ -201,7 +187,6 @@
   font-weight: 500;
 }
 
-/* --- Итоговые суммы --- */
 .summaryRow {
   display: flex;
   justify-content: space-between;

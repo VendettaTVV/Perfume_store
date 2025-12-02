@@ -1,6 +1,6 @@
 .signatureScents {
   padding: 10px 20px;
-  background-color: #f9f9f9; /* Светлый фон для секции */
+  background-color: #f9f9f9; 
   text-align: center;
 }
 
@@ -15,18 +15,17 @@
 
 .productList {
   display: grid;
-  /* Автоматическая сетка: карточки будут минимум 250px, максимум растянутся на всю ширину */
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 30px; /* Одинаковые отступы между карточками */
+  gap: 30px; 
   max-width: 1200px;
   margin: 0 auto;
-  justify-items: center; /* Центрируем карточки внутри ячеек */
+  justify-items: center; 
 }
 
-/* Адаптивность */
+
 @media (max-width: 600px) {
   .productList {
-    grid-template-columns: 1fr; /* Одна колонка на мобильных */
+    grid-template-columns: 1fr; 
     padding: 0 20px;
   }
 }

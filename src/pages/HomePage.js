@@ -12,36 +12,35 @@ function HomePage() {
   const searchParams = new URLSearchParams(location.search);
   const keyword = searchParams.get('keyword') || '';
 
+  const [genderFilter, setGenderFilter] = useState('All'); 
+  const [sortOption, setSortOption] = useState('newest'); 
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let url = 'http://localhost:5000/api/products';
-      if (keyword) {
-        url += `?keyword=${keyword}`;
-      }
+      const params = new URLSearchParams();
+      if (keyword) params.append('keyword', keyword);
+      if (genderFilter !== 'All') params.append('gender', genderFilter);
+      if (sortOption !== 'newest') params.append('sort', sortOption);
 
-      const response = await fetch(url);
+      const response = await fetch(`http://localhost:5000/api/products?${params.toString()}`);
       
-      // 1. Проверяем статус ответа
       if (!response.ok) {
-        console.error("Ошибка сервера:", response.status);
-        setProducts([]); // Ставим пустой список, чтобы сайт не падал
+        setProducts([]);
         return;
       }
 
       const data = await response.json();
       
-      // 2. Проверяем, что data - это массив, прежде чем фильтровать
       if (Array.isArray(data)) {
         const filteredData = data.filter(p => p.name !== 'Discovery Set');
         setProducts(filteredData);
       } else {
-        console.error("Сервер вернул не массив:", data);
         setProducts([]);
       }
 
     } catch (err) {
-      console.error("Ошибка сети:", err);
+      console.error("Network Error:", err);
     } finally {
       setLoading(false);
     }
@@ -50,7 +49,7 @@ function HomePage() {
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line
-  }, [keyword]); 
+  }, [keyword, genderFilter, sortOption]); 
 
   return (
     <>
@@ -58,33 +57,74 @@ function HomePage() {
       
       <div className={styles.container}>
         
+        {/* FILTER BAR */}
+        <div className={styles.filterBar}>
+            
+            {/* Left: Gender Selection */}
+            <div className={styles.genderTabs}>
+                <button 
+                    className={`${styles.genderBtn} ${genderFilter === 'All' ? styles.active : ''}`}
+                    onClick={() => setGenderFilter('All')}
+                >
+                    All
+                </button>
+                <button 
+                    className={`${styles.genderBtn} ${genderFilter === 'Female' ? styles.active : ''}`}
+                    onClick={() => setGenderFilter('Female')}
+                >
+                    For Her
+                </button>
+                <button 
+                    className={`${styles.genderBtn} ${genderFilter === 'Male' ? styles.active : ''}`}
+                    onClick={() => setGenderFilter('Male')}
+                >
+                    For Him
+                </button>
+                <button 
+                    className={`${styles.genderBtn} ${genderFilter === 'Unisex' ? styles.active : ''}`}
+                    onClick={() => setGenderFilter('Unisex')}
+                >
+                    Unisex
+                </button>
+            </div>
+
+            {/* Right: Sort Option */}
+            <div className={styles.sortWrapper}>
+                <select 
+                    className={styles.sortSelect}
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                >
+                    <option value="newest">New Arrivals</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
         {!keyword && (
           <div className={styles.discoveryBanner}>
-            <h2 className={styles.discoveryTitle}>
-              Создай Свой Уникальный Сет
-            </h2>
+            <h2 className={styles.discoveryTitle}>Create Your Bespoke Set</h2>
             <p className={styles.discoveryText}>
-              Выберите 5 ароматов, которые вас вдохновляют, и соберите персональную коллекцию миниатюр для знакомства с брендом.
+              Select 5 scents that inspire you and build a personalised collection of miniatures.
             </p>
             <Link to="/discovery-set" className={styles.discoveryBtn}>
-              СОБРАТЬ СЕТ
+              BUILD YOUR SET
             </Link>
           </div>
         )}
 
         {keyword && (
-           <h2 className={styles.searchTitle}>
-             Результаты поиска: "{keyword}"
-           </h2>
+           <h2 className={styles.searchTitle}>Search Results for: "{keyword}"</h2>
         )}
 
         {loading ? (
-           <div style={{ textAlign: 'center', padding: '50px', color: '#888' }}>Загрузка...</div>
+           <div style={{ textAlign: 'center', padding: '50px', color: '#888' }}>Loading...</div>
         ) : products.length > 0 ? (
            <SignatureScents products={products} />
         ) : (
            <div style={{ textAlign: 'center', padding: '50px', color: '#777' }}>
-             Товары не найдены.
+             No products found.
            </div>
         )}
       </div>

@@ -1,12 +1,10 @@
 import React from 'react';
 import styles from './styles/HeroSection.module.css';
 
-// 1. Импортируем изображение (Webpack сам найдет правильный путь)
 import heroImage from '../assets/hero-bg-v1.png'; 
 
 function HeroSection() {
   return (
-    // 2. Передаем картинку через инлайн-стиль
     <section 
       className={styles.hero} 
       style={{ backgroundImage: `url(${heroImage})` }}
