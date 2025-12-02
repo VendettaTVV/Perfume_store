@@ -56,11 +56,7 @@ function HomePage() {
       {!keyword && <HeroSection />}
       
       <div className={styles.container}>
-        
-        {/* FILTER BAR */}
         <div className={styles.filterBar}>
-            
-            {/* Left: Gender Selection */}
             <div className={styles.genderTabs}>
                 <button 
                     className={`${styles.genderBtn} ${genderFilter === 'All' ? styles.active : ''}`}
@@ -87,8 +83,6 @@ function HomePage() {
                     Unisex
                 </button>
             </div>
-
-            {/* Right: Sort Option */}
             <div className={styles.sortWrapper}>
                 <select 
                     className={styles.sortSelect}

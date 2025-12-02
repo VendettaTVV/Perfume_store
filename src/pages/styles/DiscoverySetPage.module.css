@@ -1,41 +1,117 @@
-.signatureScents {
-  padding: 30px 20px 80px; 
-  background-color: #fff;
-  text-align: center;
+.pageContent {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 80vh;
+    padding: 20px 20px;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
 }
+
+.mainContent {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.centeredMessage {
+    text-align: center;
+    padding: 40px;
+    font-size: 1em;
+}
+
 
 .title {
-  font-size: 2.2em;
-  margin-bottom: 40px;
-  color: #1a1a1a;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  font-family: 'Playfair Display', serif;
-  font-weight: 400;
+    font-size: 2em;
+    font-weight: 400;
+    margin: 10px 0 10px 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-.productList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+.subtitle {
+    font-size: 1em;
+    color: #666;
+    margin: 0 0 5px 0;
 }
 
-@media (max-width: 768px) {
-  .productList {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-  }
-  
-  .title {
-    font-size: 1.8em;
-    margin-bottom: 30px;
-  }
+.price {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #000;
+    margin: 10px 0 20px 0;
 }
 
-@media (max-width: 480px) {
-  .productList {
-    grid-template-columns: 1fr;
-  }
+.imageContainer {
+    margin-bottom: 20px;
+}
+
+.productImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.selectors {
+    margin: 10px 0;
+}
+
+.selectGroup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.selectLabel {
+    font-weight: 500;
+    margin-right: 20px;
+    flex-basis: 40%;
+    text-align: left;
+}
+
+.select {
+    width: 100%;
+    flex-basis: 60%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    appearance: none;
+    background-color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.select:focus {
+    border-color: #000;
+    outline: none;
+}
+
+.addBtn {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+    border-radius: 0;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 25px;
+}
+
+.addBtn:hover:not(:disabled) {
+    background-color: #333;
+}
+
+.addBtn:disabled {
+    background-color: #eee;
+    color: #aaa;
+    border-color: #eee;
+    cursor: not-allowed;
 }
